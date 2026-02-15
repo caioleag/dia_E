@@ -93,9 +93,10 @@
   /* Container with fixed height and internal scroll */
   .container-fixed {
     height: 100dvh;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    position: relative;
+    /* No overflow to allow glow effects to render */
   }
 
   .scrollable-content {
@@ -103,6 +104,12 @@
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* Add padding to elements with glow to prevent clipping */
+  .glow-container {
+    padding: 4px;
+    margin: -4px;
   }
 }
 
