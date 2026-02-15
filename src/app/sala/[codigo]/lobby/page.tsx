@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, Users } from "lucide-react";
 import { type Sala, type User, type SalaJogador } from "@/types";
 import { encerrarSala, iniciarJogo } from "@/lib/sala";
+import { useSound } from "@/lib/hooks/useSound";
 
 const QRCodeDisplay = dynamic(() => import("@/components/lobby/QRCodeDisplay"), { ssr: false });
 
@@ -16,6 +17,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   const { codigo } = use(params);
   const router = useRouter();
   const supabase = createClient();
+  const { play } = useSound();
 
   const [sala, setSala] = useState<Sala | null>(null);
   const [players, setPlayers] = useState<User[]>([]);
@@ -87,6 +89,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
           filter: `sala_id=eq.${salaId}`,
         },
         async () => {
+          play("click", 0.15);
           await loadPlayers(salaId);
         }
       )
@@ -107,6 +110,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
     if (!sala) return;
     setStarting(true);
     await iniciarJogo(sala.id);
+    play("transition", 0.5);
     router.push(`/sala/${codigo}/jogo`);
   }
 

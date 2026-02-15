@@ -6,10 +6,12 @@ import Button from "@/components/ui/Button";
 import { ArrowLeft, Users, Heart } from "lucide-react";
 import { type Modo } from "@/types";
 import { criarSala } from "@/lib/sala";
+import { useSound } from "@/lib/hooks/useSound";
 
 export default function CriarSalaPage() {
   const router = useRouter();
   const supabase = createClient();
+  const { play } = useSound();
   const [modo, setModo] = useState<Modo>("grupo");
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +22,11 @@ export default function CriarSalaPage() {
       if (!user) { router.push("/login"); return; }
 
       const sala = await criarSala(modo, user.id);
+      play("success", 0.4);
       router.push(`/sala/${sala.codigo}/lobby`);
     } catch (err) {
       console.error(err);
+      play("alert", 0.5);
     } finally {
       setLoading(false);
     }
@@ -50,7 +54,10 @@ export default function CriarSalaPage() {
           <div className="flex flex-col gap-3">
             {/* Grupo */}
             <button
-              onClick={() => setModo("grupo")}
+              onClick={() => {
+                setModo("grupo");
+                play("click", 0.2);
+              }}
               className={`w-full flex items-center gap-4 p-5 rounded-card border-2 transition-all ${
                 modo === "grupo"
                   ? "border-brand-lilac bg-bg-elevated shadow-glow-soft"
@@ -82,7 +89,10 @@ export default function CriarSalaPage() {
 
             {/* Casal */}
             <button
-              onClick={() => setModo("casal")}
+              onClick={() => {
+                setModo("casal");
+                play("click", 0.2);
+              }}
               className={`w-full flex items-center gap-4 p-5 rounded-card border-2 transition-all ${
                 modo === "casal"
                   ? "border-brand-pink bg-bg-elevated shadow-glow-soft"

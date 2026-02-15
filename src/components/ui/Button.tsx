@@ -1,11 +1,13 @@
 "use client";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
 import { cn } from "@/lib/utils";
+import { useSound } from "@/lib/hooks/useSound";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
+  soundOnClick?: boolean;
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -16,11 +18,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = "md",
       loading,
       disabled,
+      soundOnClick = true,
+      onClick,
       children,
       ...props
     },
     ref
   ) => {
+    const { play } = useSound();
     const base =
       "inline-flex items-center justify-center rounded-pill font-sans font-medium transition-all duration-150 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-lilac focus-visible:ring-offset-2 focus-visible:ring-offset-bg-deep select-none disabled:cursor-not-allowed";
 
@@ -41,11 +46,19 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: "px-10 py-4 text-lg min-h-[64px]",
     };
 
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (soundOnClick && !disabled && !loading) {
+        play("click", 0.3);
+      }
+      onClick?.(e);
+    };
+
     return (
       <button
         ref={ref}
         className={cn(base, variants[variant], sizes[size], className)}
         disabled={disabled || loading}
+        onClick={handleClick}
         {...props}
       >
         {loading ? (

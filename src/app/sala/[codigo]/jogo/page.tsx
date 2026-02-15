@@ -11,8 +11,10 @@ import Avatar from "@/components/ui/Avatar";
 import GameCard from "@/components/carta/GameCard";
 import { MoreVertical, X as XIcon } from "lucide-react";
 import { type User, type SalaJogador, type Sala, CATEGORIAS_GRUPO, CATEGORIAS_CASAL } from "@/types";
+import { useSound } from "@/lib/hooks/useSound";
 
 function JogoContent({ codigo }: { codigo: string }) {
+  const { play } = useSound();
   const router = useRouter();
   const supabase = createClient();
   const {
@@ -88,6 +90,10 @@ function JogoContent({ codigo }: { codigo: string }) {
     // Animation delay
     await new Promise((resolve) => setTimeout(resolve, 1200));
     const jogador = sortearJogador();
+
+    // Play success sound when player is drawn
+    play("success", 0.4);
+
     if (jogador && "vibrate" in navigator) {
       navigator.vibrate([30, 50, 30]);
     }
@@ -103,12 +109,15 @@ function JogoContent({ codigo }: { codigo: string }) {
 
     if (!result) {
       // No compatible item — skip round
+      play("alert", 0.5);
       alert("Nenhuma carta compatível encontrada. Pulando rodada.");
       proximaRodada();
       setBuscandoCarta(false);
       return;
     }
 
+    // Play transition sound when card is shown
+    play("transition", 0.4);
     mostrarCarta(result.item, result.segundoJogador);
     setBuscandoCarta(false);
   }
