@@ -48,19 +48,19 @@ export default function CriarSalaPage() {
         <h1 className="font-display text-xl font-bold text-text-primary">Nova Sala</h1>
       </header>
 
-      <main className="flex-1 flex flex-col justify-start gap-8 max-w-sm mx-auto w-full pt-12">
+      <main className="flex-1 overflow-y-auto flex flex-col gap-5 max-w-sm mx-auto w-full pt-4 pb-6">
         {/* Modo de Jogo: Online ou Solo */}
         <div>
-          <p className="font-sans text-text-secondary text-sm text-center mb-4">
+          <p className="font-sans text-text-secondary text-sm text-center mb-3">
             Tipo de sessão
           </p>
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-2 mb-2">
             <button
               onClick={() => {
                 setModoJogo("online");
                 play("click", 0.2);
               }}
-              className={`flex-1 px-4 py-3 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
+              className={`flex-1 px-4 py-2.5 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
                 modoJogo === "online"
                   ? "border-brand-lilac bg-bg-elevated text-text-primary"
                   : "border-border-subtle bg-bg-surface text-text-secondary"
@@ -73,7 +73,7 @@ export default function CriarSalaPage() {
                 setModoJogo("solo");
                 play("click", 0.2);
               }}
-              className={`flex-1 px-4 py-3 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
+              className={`flex-1 px-4 py-2.5 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
                 modoJogo === "solo"
                   ? "border-brand-amber bg-bg-elevated text-text-primary"
                   : "border-border-subtle bg-bg-surface text-text-secondary"
@@ -82,7 +82,7 @@ export default function CriarSalaPage() {
               Solo
             </button>
           </div>
-          <p className="font-sans text-text-disabled text-xs text-center mb-6">
+          <p className="font-sans text-text-disabled text-xs text-center">
             {modoJogo === "online"
               ? "Convide outros jogadores com código ou QR"
               : "Adicione nomes fictícios para jogar sozinho"}
@@ -90,18 +90,18 @@ export default function CriarSalaPage() {
         </div>
 
         <div>
-          <p className="font-sans text-text-secondary text-sm text-center mb-6">
+          <p className="font-sans text-text-secondary text-sm text-center mb-3">
             Escolha o modo de jogo
           </p>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5">
             {/* Grupo */}
             <button
               onClick={() => {
                 setModo("grupo");
                 play("click", 0.2);
               }}
-              className={`w-full flex items-center gap-4 p-5 rounded-card border-2 transition-all ${
+              className={`w-full flex items-center gap-3 p-4 rounded-card border-2 transition-all ${
                 modo === "grupo"
                   ? "border-brand-lilac bg-bg-elevated shadow-glow-soft"
                   : "border-border-subtle bg-bg-surface hover:border-brand-purple/50"
@@ -109,14 +109,14 @@ export default function CriarSalaPage() {
               aria-pressed={modo === "grupo"}
             >
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                   modo === "grupo" ? "bg-gradient-brand" : "bg-bg-elevated"
                 }`}
               >
-                <Users size={24} className={modo === "grupo" ? "text-white" : "text-text-secondary"} />
+                <Users size={20} className={modo === "grupo" ? "text-white" : "text-text-secondary"} />
               </div>
               <div className="text-left">
-                <p className={`font-sans text-base font-medium ${modo === "grupo" ? "text-text-primary" : "text-text-secondary"}`}>
+                <p className={`font-sans text-sm font-medium ${modo === "grupo" ? "text-text-primary" : "text-text-secondary"}`}>
                   Modo Grupo
                 </p>
                 <p className="font-sans text-xs text-text-disabled mt-0.5">
@@ -136,7 +136,7 @@ export default function CriarSalaPage() {
                 setModo("casal");
                 play("click", 0.2);
               }}
-              className={`w-full flex items-center gap-4 p-5 rounded-card border-2 transition-all ${
+              className={`w-full flex items-center gap-3 p-4 rounded-card border-2 transition-all ${
                 modo === "casal"
                   ? "border-brand-pink bg-bg-elevated shadow-glow-soft"
                   : "border-border-subtle bg-bg-surface hover:border-brand-wine/50"
@@ -145,14 +145,14 @@ export default function CriarSalaPage() {
               style={modo === "casal" ? { boxShadow: "0 0 12px rgba(236, 72, 153, 0.2)" } : {}}
             >
               <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                   modo === "casal" ? "bg-gradient-casal" : "bg-bg-elevated"
                 }`}
               >
-                <Heart size={24} className={modo === "casal" ? "text-white" : "text-text-secondary"} />
+                <Heart size={20} className={modo === "casal" ? "text-white" : "text-text-secondary"} />
               </div>
               <div className="text-left">
-                <p className={`font-sans text-base font-medium ${modo === "casal" ? "text-text-primary" : "text-text-secondary"}`}>
+                <p className={`font-sans text-sm font-medium ${modo === "casal" ? "text-text-primary" : "text-text-secondary"}`}>
                   Modo Casal
                 </p>
                 <p className="font-sans text-xs text-text-disabled mt-0.5">
@@ -171,13 +171,13 @@ export default function CriarSalaPage() {
         {/* Modo Escalada */}
         <button
           onClick={() => { setModoEscalada((v) => !v); play("click", 0.2); }}
-          className={`w-full flex items-center gap-4 p-4 rounded-card border-2 transition-all ${
+          className={`w-full flex items-center gap-3 p-3.5 rounded-card border-2 transition-all ${
             modoEscalada
               ? "border-brand-amber bg-bg-elevated"
               : "border-border-subtle bg-bg-surface"
           }`}
         >
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-xl ${modoEscalada ? "bg-brand-amber/20" : "bg-bg-deep"}`}>
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-lg ${modoEscalada ? "bg-brand-amber/20" : "bg-bg-deep"}`}>
             ⚡
           </div>
           <div className="text-left flex-1">
@@ -194,7 +194,7 @@ export default function CriarSalaPage() {
         </button>
 
         {/* Punição opcional */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           <label className="font-sans text-sm text-text-secondary text-center">
             Punição por pular <span className="text-text-disabled">(opcional)</span>
           </label>
@@ -204,7 +204,7 @@ export default function CriarSalaPage() {
             onChange={(e) => setPunicao(e.target.value)}
             maxLength={100}
             placeholder="Ex: beba um gole, faça 10 flexões..."
-            className="w-full px-4 py-3 rounded-xl bg-bg-surface border border-border-subtle text-text-primary font-sans text-sm placeholder:text-text-disabled focus:outline-none focus:border-brand-lilac transition-colors"
+            className="w-full px-4 py-2.5 rounded-xl bg-bg-surface border border-border-subtle text-text-primary font-sans text-sm placeholder:text-text-disabled focus:outline-none focus:border-brand-lilac transition-colors"
           />
           <p className="font-sans text-xs text-text-disabled text-center">
             Quem pular recebe uma carta da mesma categoria + essa punição
