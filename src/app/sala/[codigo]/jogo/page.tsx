@@ -71,7 +71,7 @@ function JogoContent({ codigo }: { codigo: string }) {
 
     if (jogadoresData) {
       const playerUsers = jogadoresData
-        .map((sj: SalaJogador & { users: User }) => sj.users)
+        .map((sj: any) => sj.users)
         .filter(Boolean);
       setPlayers(playerUsers);
 

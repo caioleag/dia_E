@@ -59,7 +59,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
 
     if (data) {
       const playerUsers = data
-        .map((sj: SalaJogador & { users: User }) => sj.users)
+        .map((sj: any) => sj.users)
         .filter(Boolean);
       setPlayers(playerUsers);
     }

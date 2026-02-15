@@ -53,7 +53,7 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
       .eq("sala_id", salaId);
 
     if (data) {
-      const playerUsers = data.map((sj: SalaJogador & { users: User }) => sj.users).filter(Boolean);
+      const playerUsers = data.map((sj: any) => sj.users).filter(Boolean);
       setPlayers(playerUsers);
     }
   }
