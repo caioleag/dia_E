@@ -12,7 +12,8 @@ export async function sortearItem(
   modo: Modo,
   allPlayers: User[],
   prefs: Map<string, number>, // key: `${userId}-${modo}-${categoria}`
-  categoriasAtivas?: string[] // session-level category filter
+  categoriasAtivas?: string[], // session-level category filter
+  nivelMaxOverride?: number // escalada: caps nivel globally
 ): Promise<SorteioResult | null> {
   const supabase = createClient();
 
@@ -35,7 +36,8 @@ export async function sortearItem(
   for (let attempt = 0; attempt < 3; attempt++) {
     // Pick a random category
     const categoria = availableCategories[Math.floor(Math.random() * availableCategories.length)];
-    const nivelMax = prefs.get(`${jogador.id}-${modo}-${categoria}`) ?? 1;
+    const playerNivel = prefs.get(`${jogador.id}-${modo}-${categoria}`) ?? 1;
+    const nivelMax = nivelMaxOverride !== undefined ? Math.min(playerNivel, nivelMaxOverride) : playerNivel;
 
     // Query items from Supabase
     const { data: items } = await supabase

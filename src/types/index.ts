@@ -58,6 +58,7 @@ export interface Sala {
   punicao?: string | null;
   estado_partida?: EstadoPartida | null;
   resumo_partida?: ResumoPart | null;
+  modo_escalada?: boolean | null;
 }
 
 export interface SalaJogador {

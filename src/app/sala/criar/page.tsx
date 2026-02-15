@@ -15,6 +15,7 @@ export default function CriarSalaPage() {
   const [modo, setModo] = useState<Modo>("grupo");
   const [modoJogo, setModoJogo] = useState<ModoJogo>("online");
   const [punicao, setPunicao] = useState("");
+  const [modoEscalada, setModoEscalada] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleCriar() {
@@ -23,7 +24,7 @@ export default function CriarSalaPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
 
-      const sala = await criarSala(modo, user.id, modoJogo, punicao.trim() || null);
+      const sala = await criarSala(modo, user.id, modoJogo, punicao.trim() || null, modoEscalada);
       play("success", 0.4);
       router.push(`/sala/${sala.codigo}/lobby`);
     } catch (err) {
@@ -166,6 +167,31 @@ export default function CriarSalaPage() {
             </button>
           </div>
         </div>
+
+        {/* Modo Escalada */}
+        <button
+          onClick={() => { setModoEscalada((v) => !v); play("click", 0.2); }}
+          className={`w-full flex items-center gap-4 p-4 rounded-card border-2 transition-all ${
+            modoEscalada
+              ? "border-brand-amber bg-bg-elevated"
+              : "border-border-subtle bg-bg-surface"
+          }`}
+        >
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-xl ${modoEscalada ? "bg-brand-amber/20" : "bg-bg-deep"}`}>
+            ⚡
+          </div>
+          <div className="text-left flex-1">
+            <p className={`font-sans text-sm font-medium ${modoEscalada ? "text-text-primary" : "text-text-secondary"}`}>
+              Modo Escalada
+            </p>
+            <p className="font-sans text-xs text-text-disabled mt-0.5">
+              Cartas começam suaves e ficam mais intensas
+            </p>
+          </div>
+          <div className={`w-11 h-6 rounded-full transition-colors flex-shrink-0 ${modoEscalada ? "bg-brand-amber" : "bg-bg-elevated"}`}>
+            <div className={`w-5 h-5 rounded-full bg-white shadow transition-transform mt-0.5 ${modoEscalada ? "translate-x-5.5 ml-0.5" : "ml-0.5"}`} />
+          </div>
+        </button>
 
         {/* Punição opcional */}
         <div className="flex flex-col gap-2">
