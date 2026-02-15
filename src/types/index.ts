@@ -36,6 +36,7 @@ export interface Sala {
   created_at: string;
   encerrada_at: string | null;
   jogadores_ficticios?: JogadorFicticio[] | null;
+  categorias_ativas?: string[] | null;
 }
 
 export interface SalaJogador {

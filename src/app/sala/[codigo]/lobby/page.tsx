@@ -11,7 +11,8 @@ import { type Sala, type User, type SalaJogador } from "@/types";
 import { encerrarSala, iniciarJogo } from "@/lib/sala";
 import { useSound } from "@/lib/hooks/useSound";
 import AddFictionalPlayers from "@/components/lobby/AddFictionalPlayers";
-import { type JogadorFicticio } from "@/types";
+import CategorySelector from "@/components/lobby/CategorySelector";
+import { type JogadorFicticio, CATEGORIAS_GRUPO, CATEGORIAS_CASAL } from "@/types";
 
 const QRCodeDisplay = dynamic(() => import("@/components/lobby/QRCodeDisplay"), { ssr: false });
 
@@ -28,6 +29,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   const [starting, setStarting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [jogadoresFicticios, setJogadoresFicticios] = useState<JogadorFicticio[]>([]);
+  const [categoriasAtivas, setCategoriasAtivas] = useState<string[]>([]);
 
   useEffect(() => {
     let cleanup: (() => void) | undefined;
@@ -59,6 +61,11 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
       return;
     }
     setSala(salaData as Sala);
+
+    // Init active categories (use saved or all by default)
+    const cats = salaData.modo === "grupo" ? CATEGORIAS_GRUPO : CATEGORIAS_CASAL;
+    const todasNomes = cats.map((c) => c.nome);
+    setCategoriasAtivas(salaData.categorias_ativas ?? todasNomes);
 
     // Load fictional players if solo mode
     if (salaData.modo_jogo === "solo" && salaData.jogadores_ficticios) {
@@ -122,13 +129,12 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
     if (!sala) return;
     setStarting(true);
 
-    // If solo mode, save fictional players before starting
+    // Save session config before starting
+    const updatePayload: Record<string, unknown> = { categorias_ativas: categoriasAtivas };
     if (sala.modo_jogo === "solo") {
-      await supabase
-        .from("salas")
-        .update({ jogadores_ficticios: jogadoresFicticios })
-        .eq("id", sala.id);
+      updatePayload.jogadores_ficticios = jogadoresFicticios;
     }
+    await supabase.from("salas").update(updatePayload).eq("id", sala.id);
 
     await iniciarJogo(sala.id);
     play("transition", 0.5);
@@ -208,6 +214,16 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
           </>
         )}
       </main>
+
+      {sala && (
+        <div className="py-4 border-t border-border-subtle">
+          <CategorySelector
+            modo={sala.modo}
+            selecionadas={categoriasAtivas}
+            onChange={setCategoriasAtivas}
+          />
+        </div>
+      )}
 
       <div className="pb-safe flex flex-col gap-3 py-4">
         <button

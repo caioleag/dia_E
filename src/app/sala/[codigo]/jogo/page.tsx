@@ -142,7 +142,14 @@ function JogoContent({ codigo }: { codigo: string }) {
     setBuscandoCarta(true);
     escolherTipo(tipo);
 
-    const result = await sortearItem(jogadorAtual, tipo, sala.modo, players, prefs);
+    const result = await sortearItem(
+      jogadorAtual,
+      tipo,
+      sala.modo,
+      players,
+      prefs,
+      sala.categorias_ativas ?? undefined
+    );
 
     if (!result) {
       // No compatible item — skip round

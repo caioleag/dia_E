@@ -11,17 +11,21 @@ export async function sortearItem(
   tipo: TipoItem,
   modo: Modo,
   allPlayers: User[],
-  prefs: Map<string, number> // key: `${userId}-${modo}-${categoria}`
+  prefs: Map<string, number>, // key: `${userId}-${modo}-${categoria}`
+  categoriasAtivas?: string[] // session-level category filter
 ): Promise<SorteioResult | null> {
   const supabase = createClient();
 
-  // Get categories where this player has nivel >= 1
+  // Get categories where this player has nivel >= 1 AND category is active in session
   const availableCategories: string[] = [];
   const prefPrefix = `${jogador.id}-${modo}-`;
 
   prefs.forEach((nivel, key) => {
     if (key.startsWith(prefPrefix) && nivel >= 1) {
-      availableCategories.push(key.replace(prefPrefix, ""));
+      const categoria = key.replace(prefPrefix, "");
+      if (!categoriasAtivas || categoriasAtivas.includes(categoria)) {
+        availableCategories.push(categoria);
+      }
     }
   });
 
