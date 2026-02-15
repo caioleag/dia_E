@@ -10,6 +10,8 @@ import { ArrowLeft, Users } from "lucide-react";
 import { type Sala, type User, type SalaJogador } from "@/types";
 import { encerrarSala, iniciarJogo } from "@/lib/sala";
 import { useSound } from "@/lib/hooks/useSound";
+import AddFictionalPlayers from "@/components/lobby/AddFictionalPlayers";
+import { type JogadorFicticio } from "@/types";
 
 const QRCodeDisplay = dynamic(() => import("@/components/lobby/QRCodeDisplay"), { ssr: false });
 
@@ -25,6 +27,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [jogadoresFicticios, setJogadoresFicticios] = useState<JogadorFicticio[]>([]);
 
   useEffect(() => {
     let cleanup: (() => void) | undefined;
@@ -56,6 +59,15 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
       return;
     }
     setSala(salaData as Sala);
+
+    // Load fictional players if solo mode
+    if (salaData.modo_jogo === "solo" && salaData.jogadores_ficticios) {
+      setJogadoresFicticios(salaData.jogadores_ficticios as JogadorFicticio[]);
+      setLoading(false);
+      return;
+    }
+
+    // Online mode - load real players and setup realtime
     await loadPlayers(salaData.id);
     const cleanup = setupRealtime(salaData.id);
     setLoading(false);
@@ -109,6 +121,15 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   async function handleIniciar() {
     if (!sala) return;
     setStarting(true);
+
+    // If solo mode, save fictional players before starting
+    if (sala.modo_jogo === "solo") {
+      await supabase
+        .from("salas")
+        .update({ jogadores_ficticios: jogadoresFicticios })
+        .eq("id", sala.id);
+    }
+
     await iniciarJogo(sala.id);
     play("transition", 0.5);
     router.push(`/sala/${codigo}/jogo`);
@@ -122,11 +143,13 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   }
 
   const minPlayers = sala?.modo === "casal" ? 2 : 3;
-  const maxReached = sala?.modo === "casal" ? players.length === 2 : true;
+  const isSoloMode = sala?.modo_jogo === "solo";
+  const playerCount = isSoloMode ? jogadoresFicticios.length : players.length;
+  const maxReached = sala?.modo === "casal" ? playerCount === 2 : true;
   const canStart =
     sala?.modo === "casal"
-      ? players.length === 2
-      : players.length >= 3;
+      ? playerCount === 2
+      : playerCount >= 3;
 
   if (loading) {
     return (
@@ -149,28 +172,41 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
         <div>
           <h1 className="font-display text-lg font-bold text-text-primary capitalize">
             Lobby — Modo {sala?.modo}
+            <span className="text-sm text-text-disabled font-sans font-normal ml-2">
+              ({isSoloMode ? "Solo" : "Online"})
+            </span>
           </h1>
         </div>
       </header>
 
       <main className="scrollable-content flex flex-col gap-6 py-4">
-        {/* Room code + QR */}
-        <div className="flex flex-col items-center gap-6">
-          <RoomCode codigo={codigo} />
-          <QRCodeDisplay codigo={codigo} />
-        </div>
+        {isSoloMode ? (
+          /* Solo Mode - Add Fictional Players */
+          <AddFictionalPlayers
+            modo={sala.modo}
+            jogadores={jogadoresFicticios}
+            onJogadoresChange={setJogadoresFicticios}
+          />
+        ) : (
+          /* Online Mode - Show QR and Players */
+          <>
+            <div className="flex flex-col items-center gap-6">
+              <RoomCode codigo={codigo} />
+              <QRCodeDisplay codigo={codigo} />
+            </div>
 
-        {/* Players */}
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Users size={16} className="text-text-secondary" />
-            <span className="font-sans text-sm text-text-secondary">
-              {players.length} jogador{players.length !== 1 ? "es" : ""}
-              {sala?.modo === "casal" ? " / 2 necessários" : " / mínimo 3"}
-            </span>
-          </div>
-          <PlayerList players={players} hostId={sala?.host_id} />
-        </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Users size={16} className="text-text-secondary" />
+                <span className="font-sans text-sm text-text-secondary">
+                  {players.length} jogador{players.length !== 1 ? "es" : ""}
+                  {sala?.modo === "casal" ? " / 2 necessários" : " / mínimo 3"}
+                </span>
+              </div>
+              <PlayerList players={players} hostId={sala?.host_id} />
+            </div>
+          </>
+        )}
       </main>
 
       <div className="pb-safe flex flex-col gap-3 py-4">
@@ -193,8 +229,8 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
         {!canStart && (
           <p className="font-sans text-xs text-text-disabled text-center">
             {sala?.modo === "casal"
-              ? `Aguardando ${2 - players.length} jogador${2 - players.length !== 1 ? "es" : ""}`
-              : `Aguardando mais ${Math.max(0, 3 - players.length)} jogador${Math.max(0, 3 - players.length) !== 1 ? "es" : ""}`}
+              ? `${isSoloMode ? "Adicione" : "Aguardando"} ${2 - playerCount} jogador${2 - playerCount !== 1 ? "es" : ""}`
+              : `${isSoloMode ? "Adicione" : "Aguardando"} mais ${Math.max(0, 3 - playerCount)} jogador${Math.max(0, 3 - playerCount) !== 1 ? "es" : ""}`}
           </p>
         )}
       </div>

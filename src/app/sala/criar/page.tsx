@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 import { ArrowLeft, Users, Heart } from "lucide-react";
-import { type Modo } from "@/types";
+import { type Modo, type ModoJogo } from "@/types";
 import { criarSala } from "@/lib/sala";
 import { useSound } from "@/lib/hooks/useSound";
 
@@ -13,6 +13,7 @@ export default function CriarSalaPage() {
   const supabase = createClient();
   const { play } = useSound();
   const [modo, setModo] = useState<Modo>("grupo");
+  const [modoJogo, setModoJogo] = useState<ModoJogo>("online");
   const [loading, setLoading] = useState(false);
 
   async function handleCriar() {
@@ -21,7 +22,7 @@ export default function CriarSalaPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
 
-      const sala = await criarSala(modo, user.id);
+      const sala = await criarSala(modo, user.id, modoJogo);
       play("success", 0.4);
       router.push(`/sala/${sala.codigo}/lobby`);
     } catch (err) {
@@ -46,6 +47,46 @@ export default function CriarSalaPage() {
       </header>
 
       <main className="flex-1 flex flex-col justify-center gap-8 max-w-sm mx-auto w-full">
+        {/* Modo de Jogo: Online ou Solo */}
+        <div>
+          <p className="font-sans text-text-secondary text-sm text-center mb-4">
+            Tipo de sessão
+          </p>
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => {
+                setModoJogo("online");
+                play("click", 0.2);
+              }}
+              className={`flex-1 px-4 py-3 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
+                modoJogo === "online"
+                  ? "border-brand-lilac bg-bg-elevated text-text-primary"
+                  : "border-border-subtle bg-bg-surface text-text-secondary"
+              }`}
+            >
+              Online
+            </button>
+            <button
+              onClick={() => {
+                setModoJogo("solo");
+                play("click", 0.2);
+              }}
+              className={`flex-1 px-4 py-3 rounded-xl border-2 font-sans text-sm font-medium transition-all ${
+                modoJogo === "solo"
+                  ? "border-brand-amber bg-bg-elevated text-text-primary"
+                  : "border-border-subtle bg-bg-surface text-text-secondary"
+              }`}
+            >
+              Solo
+            </button>
+          </div>
+          <p className="font-sans text-text-disabled text-xs text-center mb-6">
+            {modoJogo === "online"
+              ? "Convide outros jogadores com código ou QR"
+              : "Adicione nomes fictícios para jogar sozinho"}
+          </p>
+        </div>
+
         <div>
           <p className="font-sans text-text-secondary text-sm text-center mb-6">
             Escolha o modo de jogo

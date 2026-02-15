@@ -1,4 +1,5 @@
 export type Modo = "grupo" | "casal";
+export type ModoJogo = "online" | "solo";
 export type StatusSala = "aguardando" | "em_jogo" | "encerrada";
 export type TipoItem = "Verdade" | "Desafio";
 
@@ -20,14 +21,21 @@ export interface Preferencia {
   updated_at: string;
 }
 
+export interface JogadorFicticio {
+  nome: string;
+  nivel: number; // 0-3, aplicado a todas as categorias
+}
+
 export interface Sala {
   id: string;
   codigo: string;
   host_id: string;
   modo: Modo;
+  modo_jogo: ModoJogo;
   status: StatusSala;
   created_at: string;
   encerrada_at: string | null;
+  jogadores_ficticios?: JogadorFicticio[] | null;
 }
 
 export interface SalaJogador {

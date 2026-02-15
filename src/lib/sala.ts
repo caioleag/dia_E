@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import { type Modo } from "@/types";
+import { type Modo, type ModoJogo } from "@/types";
 
 const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no ambiguous chars
 
@@ -9,7 +9,7 @@ export function generateCode(): string {
   ).join("");
 }
 
-export async function criarSala(modo: Modo, hostId: string) {
+export async function criarSala(modo: Modo, hostId: string, modoJogo: ModoJogo = "online") {
   const supabase = createClient();
 
   // Generate unique code
@@ -28,16 +28,25 @@ export async function criarSala(modo: Modo, hostId: string) {
 
   const { data, error } = await supabase
     .from("salas")
-    .insert({ codigo, host_id: hostId, modo, status: "aguardando" })
+    .insert({
+      codigo,
+      host_id: hostId,
+      modo,
+      modo_jogo: modoJogo,
+      status: "aguardando",
+      jogadores_ficticios: null,
+    })
     .select()
     .single();
 
   if (error) throw error;
 
-  // Add host as player too
-  await supabase
-    .from("sala_jogadores")
-    .insert({ sala_id: data.id, user_id: hostId });
+  // Only add host as player if online mode
+  if (modoJogo === "online") {
+    await supabase
+      .from("sala_jogadores")
+      .insert({ sala_id: data.id, user_id: hostId });
+  }
 
   return data;
 }
