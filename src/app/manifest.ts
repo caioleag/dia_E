@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Dia E - Verdade ou Desafio',
+    name: 'Dia E - Falar ou Fazer',
     short_name: 'Dia E',
-    description: 'Jogo social de Verdade ou Desafio para grupos e casais',
+    description: 'Jogo social de Falar ou Fazer para grupos e casais',
     start_url: '/?source=pwa',
     display: 'standalone',
     background_color: '#0A0A0F',

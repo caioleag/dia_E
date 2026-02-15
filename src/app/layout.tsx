@@ -17,8 +17,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Dia E - Verdade ou Desafio",
-  description: "Jogo social de Verdade ou Desafio para grupos e casais",
+  title: "Dia E - Falar ou Fazer",
+  description: "Jogo social de Falar ou Fazer para grupos e casais",
   // manifest is auto-generated from src/app/manifest.ts
   appleWebApp: {
     capable: true,
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     title: "Dia E",
   },
   applicationName: "Dia E",
-  keywords: ["verdade ou desafio", "jogo", "casal", "grupo", "desafio"],
+  keywords: ["falar ou fazer", "jogo", "casal", "grupo", "desafio"],
   authors: [{ name: "Dia E" }],
   icons: {
     icon: [
