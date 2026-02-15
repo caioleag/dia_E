@@ -190,10 +190,10 @@ function JogoContent({ codigo }: { codigo: string }) {
             >
               <div className="text-center mb-4">
                 <h2 className="font-display text-2xl font-bold text-text-primary mb-2">
-                  Próximo jogador
+                  {sala?.modo === "casal" && rodada > 1 ? "Próxima vez" : "Próximo jogador"}
                 </h2>
                 <p className="font-sans text-sm text-text-secondary">
-                  Toque para sortear
+                  {sala?.modo === "casal" && rodada > 1 ? "Toque para continuar" : "Toque para sortear"}
                 </p>
               </div>
               <Button
@@ -202,7 +202,9 @@ function JogoContent({ codigo }: { codigo: string }) {
                 size="lg"
                 className="w-full"
               >
-                {sorteando ? "Sorteando..." : "Sortear Jogador"}
+                {sorteando
+                  ? (sala?.modo === "casal" && rodada > 1 ? "Alternando..." : "Sorteando...")
+                  : (sala?.modo === "casal" && rodada > 1 ? "Próximo Jogador" : "Sortear Jogador")}
               </Button>
             </motion.div>
           )}

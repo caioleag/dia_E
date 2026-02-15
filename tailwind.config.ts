@@ -41,15 +41,15 @@ const config: Config = {
         sans: ["var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 20px rgba(168, 85, 247, 0.35), 0 0 40px rgba(236, 72, 153, 0.15)",
-        "glow-soft": "0 0 12px rgba(168, 85, 247, 0.2)",
+        glow: "0 0 30px rgba(168, 85, 247, 0.6), 0 0 60px rgba(236, 72, 153, 0.4)",
+        "glow-soft": "0 0 20px rgba(168, 85, 247, 0.4)",
         card: "0 4px 24px rgba(0,0,0,0.4)",
         "card-lg": "0 8px 32px rgba(0,0,0,0.6)",
       },
       keyframes: {
         "glow-pulse": {
-          "0%, 100%": { opacity: "0.3" },
-          "50%": { opacity: "0.7" },
+          "0%, 100%": { opacity: "0.8" },
+          "50%": { opacity: "1" },
         },
         "fade-slide-in": {
           "0%": { opacity: "0", transform: "translateY(20px)" },

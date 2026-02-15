@@ -37,14 +37,29 @@ export function JogoProvider({ children }: { children: ReactNode }) {
   const [cartaAtual, setCartaAtual] = useState<Item | null>(null);
   const [tipoAtual, setTipoAtual] = useState<TipoItem | null>(null);
   const [rodada, setRodada] = useState(1);
+  const [lastPlayerIndex, setLastPlayerIndex] = useState<number>(-1);
 
   const sortearJogador = useCallback(() => {
     if (players.length === 0) return null;
-    const jogador = players[Math.floor(Math.random() * players.length)];
+
+    let jogador: User;
+
+    // No modo casal, alternar entre os 2 jogadores
+    if (sala?.modo === "casal" && players.length === 2) {
+      const nextIndex = lastPlayerIndex === 0 ? 1 : 0;
+      jogador = players[nextIndex];
+      setLastPlayerIndex(nextIndex);
+    } else {
+      // No modo grupo, sortear aleatoriamente
+      const randomIndex = Math.floor(Math.random() * players.length);
+      jogador = players[randomIndex];
+      setLastPlayerIndex(randomIndex);
+    }
+
     setJogadorAtual(jogador);
     setGameState("escolha");
     return jogador;
-  }, [players]);
+  }, [players, sala, lastPlayerIndex]);
 
   const escolherTipo = useCallback((tipo: TipoItem) => {
     setTipoAtual(tipo);
