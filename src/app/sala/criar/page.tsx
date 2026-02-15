@@ -33,7 +33,7 @@ export default function CriarSalaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-deep flex flex-col px-6">
+    <div className="container-fixed bg-bg-deep px-6">
       <header className="flex items-center gap-3 pt-safe py-4">
         <button
           onClick={() => router.back()}

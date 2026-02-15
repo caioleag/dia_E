@@ -136,7 +136,7 @@ function JogoContent({ codigo }: { codigo: string }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-deep flex items-center justify-center">
+      <div className="h-screen bg-bg-deep flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-brand-lilac border-t-transparent animate-spin" />
       </div>
     );
@@ -145,7 +145,7 @@ function JogoContent({ codigo }: { codigo: string }) {
   // Only host can interact
   if (!isHost) {
     return (
-      <div className="min-h-screen bg-bg-deep flex items-center justify-center px-6">
+      <div className="h-screen bg-bg-deep flex items-center justify-center px-6">
         <div className="text-center">
           <div className="text-4xl mb-4">🎮</div>
           <p className="font-sans text-text-secondary text-sm">
@@ -157,7 +157,7 @@ function JogoContent({ codigo }: { codigo: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-bg-deep flex flex-col relative">
+    <div className="container-fixed bg-bg-deep relative">
       {/* Header */}
       <header className="flex items-center justify-between px-6 pt-safe py-4">
         <span className="font-sans text-xs text-text-disabled uppercase tracking-widest">

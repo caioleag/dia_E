@@ -109,14 +109,14 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-deep flex items-center justify-center">
+      <div className="h-screen bg-bg-deep flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-brand-lilac border-t-transparent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-bg-deep flex flex-col items-center px-6 py-safe">
+    <div className="container-fixed bg-bg-deep items-center px-6 py-safe">
       <main className="flex-1 flex flex-col items-center justify-center gap-8 w-full max-w-sm">
         {/* Status */}
         <div className="text-center">

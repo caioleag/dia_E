@@ -130,14 +130,14 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-deep flex items-center justify-center">
+      <div className="h-screen bg-bg-deep flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-brand-lilac border-t-transparent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-bg-deep flex flex-col px-6">
+    <div className="container-fixed bg-bg-deep px-6">
       <header className="flex items-center gap-3 pt-safe py-4">
         <button
           onClick={() => router.push("/")}
@@ -153,7 +153,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col gap-6 py-4 overflow-y-auto">
+      <main className="scrollable-content flex flex-col gap-6 py-4">
         {/* Room code + QR */}
         <div className="flex flex-col items-center gap-6">
           <RoomCode codigo={codigo} />

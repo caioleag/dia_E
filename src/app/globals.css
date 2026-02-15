@@ -15,7 +15,9 @@
   html,
   body {
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
   }
 
   body {
@@ -24,6 +26,13 @@
     font-family: var(--font-inter), sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fixed viewport for all main containers */
+  #__next,
+  main {
+    height: 100%;
+    overflow: hidden;
   }
 
   /* Gradient text utility */
@@ -64,6 +73,15 @@
     padding-top: max(16px, env(safe-area-inset-top));
   }
 
+  /* Fixed viewport heights - dvh respects mobile browser UI */
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+
+  .h-screen {
+    height: 100dvh;
+  }
+
   /* Gradient backgrounds */
   .bg-gradient-brand {
     background: linear-gradient(135deg, #6b21a8, #ec4899);
@@ -71,6 +89,21 @@
 
   .bg-gradient-casal {
     background: linear-gradient(135deg, #9d174d, #f43f5e);
+  }
+
+  /* Container with fixed height and internal scroll */
+  .container-fixed {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .scrollable-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

@@ -59,7 +59,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-deep flex items-center justify-center">
+      <div className="h-screen bg-bg-deep flex items-center justify-center">
         <div className="w-8 h-8 rounded-full border-2 border-brand-lilac border-t-transparent animate-spin" />
       </div>
     );
@@ -68,7 +68,7 @@ export default function HomePage() {
   const primeiroNome = user?.nome?.split(" ")[0] ?? "Jogador";
 
   return (
-    <div className="min-h-screen bg-bg-deep flex flex-col px-6">
+    <div className="container-fixed bg-bg-deep px-6">
       {/* Header */}
       <header className="flex items-center justify-between pt-safe py-4">
         <div className="flex items-center gap-3">
