@@ -36,6 +36,9 @@ export const metadata: Metadata = {
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
@@ -44,7 +47,10 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#0A0A0F",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#6B21A8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0A0F" },
+  ],
 };
 
 export default function RootLayout({
@@ -54,12 +60,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
-      <head>
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-      </head>
       <body className="font-sans bg-bg-deep text-text-primary min-h-screen">
         {children}
       </body>
