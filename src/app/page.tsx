@@ -123,7 +123,7 @@ export default function HomePage() {
       )}
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-start gap-6 pt-16 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-start gap-6 pt-16 pb-8 overflow-visible">
         <div className="text-center mb-4">
           <h1 className="font-display text-5xl font-bold gradient-text mb-2">Dia E</h1>
           <p className="font-sans text-text-disabled text-sm">Verdade ou Desafio</p>

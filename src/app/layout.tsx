@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Dia E - Verdade ou Desafio",
   description: "Jogo social de Verdade ou Desafio para grupos e casais",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",

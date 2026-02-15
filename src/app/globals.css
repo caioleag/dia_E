@@ -29,8 +29,7 @@
   }
 
   /* Fixed viewport for all main containers */
-  #__next,
-  main {
+  #__next {
     height: 100%;
     overflow: hidden;
   }
