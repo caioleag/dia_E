@@ -66,6 +66,28 @@ function JogoContent({ codigo }: { codigo: string }) {
     setIsHost(salaData.host_id === user.id);
     setSala(salaData as Sala);
 
+    // Handle solo mode with fictional players
+    if (salaData.modo_jogo === "solo" && salaData.jogadores_ficticios) {
+      const fictionalPlayers = salaData.jogadores_ficticios as any[];
+      const playerUsers = fictionalPlayers.map((fp, index) => ({
+        id: `fictional-${index}`,
+        nome: fp.nome,
+        email: null,
+        foto_url: null,
+        created_at: new Date().toISOString(),
+        onboarding_completo: true,
+      } as User));
+
+      setPlayers(playerUsers);
+
+      // Generate fictional preferences
+      const prefsMap = generateFictionalPrefs(fictionalPlayers, salaData.modo);
+      setPrefs(prefsMap);
+      setLoading(false);
+      return;
+    }
+
+    // Online mode - load real players
     const { data: jogadoresData } = await supabase
       .from("sala_jogadores")
       .select("user_id, users(*)")
@@ -83,6 +105,21 @@ function JogoContent({ codigo }: { codigo: string }) {
     }
 
     setLoading(false);
+  }
+
+  function generateFictionalPrefs(fictionalPlayers: any[], modo: string) {
+    const categorias = modo === "grupo" ? CATEGORIAS_GRUPO : CATEGORIAS_CASAL;
+    const prefsMap = new Map<string, number>();
+
+    fictionalPlayers.forEach((fp, index) => {
+      const playerId = `fictional-${index}`;
+      categorias.forEach((cat) => {
+        const key = `${playerId}-${modo}-${cat.nome}`;
+        prefsMap.set(key, fp.nivel);
+      });
+    });
+
+    return prefsMap;
   }
 
   async function handleSortearJogador() {

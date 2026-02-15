@@ -16,13 +16,25 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Dia E",
-  description: "Jogo social de Verdade ou Desafio",
+  title: "Dia E - Verdade ou Desafio",
+  description: "Jogo social de Verdade ou Desafio para grupos e casais",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Dia E",
+  },
+  applicationName: "Dia E",
+  keywords: ["verdade ou desafio", "jogo", "casal", "grupo", "desafio"],
+  authors: [{ name: "Dia E" }],
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
   },
 };
 
