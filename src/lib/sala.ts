@@ -9,7 +9,7 @@ export function generateCode(): string {
   ).join("");
 }
 
-export async function criarSala(modo: Modo, hostId: string, modoJogo: ModoJogo = "online") {
+export async function criarSala(modo: Modo, hostId: string, modoJogo: ModoJogo = "online", punicao: string | null = null) {
   const supabase = createClient();
 
   // Generate unique code
@@ -35,6 +35,7 @@ export async function criarSala(modo: Modo, hostId: string, modoJogo: ModoJogo =
       modo_jogo: modoJogo,
       status: "aguardando",
       jogadores_ficticios: null,
+      punicao: punicao || null,
     })
     .select()
     .single();

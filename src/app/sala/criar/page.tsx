@@ -14,6 +14,7 @@ export default function CriarSalaPage() {
   const { play } = useSound();
   const [modo, setModo] = useState<Modo>("grupo");
   const [modoJogo, setModoJogo] = useState<ModoJogo>("online");
+  const [punicao, setPunicao] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleCriar() {
@@ -22,7 +23,7 @@ export default function CriarSalaPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
 
-      const sala = await criarSala(modo, user.id, modoJogo);
+      const sala = await criarSala(modo, user.id, modoJogo, punicao.trim() || null);
       play("success", 0.4);
       router.push(`/sala/${sala.codigo}/lobby`);
     } catch (err) {
@@ -164,6 +165,24 @@ export default function CriarSalaPage() {
               )}
             </button>
           </div>
+        </div>
+
+        {/* Punição opcional */}
+        <div className="flex flex-col gap-2">
+          <label className="font-sans text-sm text-text-secondary text-center">
+            Punição por pular <span className="text-text-disabled">(opcional)</span>
+          </label>
+          <input
+            type="text"
+            value={punicao}
+            onChange={(e) => setPunicao(e.target.value)}
+            maxLength={100}
+            placeholder="Ex: beba um gole, faça 10 flexões..."
+            className="w-full px-4 py-3 rounded-xl bg-bg-surface border border-border-subtle text-text-primary font-sans text-sm placeholder:text-text-disabled focus:outline-none focus:border-brand-lilac transition-colors"
+          />
+          <p className="font-sans text-xs text-text-disabled text-center">
+            Quem pular recebe uma carta da mesma categoria + essa punição
+          </p>
         </div>
 
         <Button onClick={handleCriar} loading={loading} className="w-full">

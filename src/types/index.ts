@@ -26,6 +26,24 @@ export interface JogadorFicticio {
   nivel: number; // 0-3, aplicado a todas as categorias
 }
 
+export interface EstadoPartida {
+  gameState: "sorteio" | "escolha" | "carta" | "encerrada";
+  rodada: number;
+  jogadorAtual: { id: string; nome: string | null; foto_url: string | null } | null;
+  segundoJogador: { nome: string | null; foto_url: string | null } | null;
+  cartaAtual: Item | null;
+  tipoAtual: TipoItem | null;
+  isPenalty: boolean;
+}
+
+export interface ResumoPart {
+  rodadas: number;
+  pulos: number;
+  penalidades: number;
+  vetosUsados: number;
+  categorias: Record<string, number>;
+}
+
 export interface Sala {
   id: string;
   codigo: string;
@@ -37,6 +55,9 @@ export interface Sala {
   encerrada_at: string | null;
   jogadores_ficticios?: JogadorFicticio[] | null;
   categorias_ativas?: string[] | null;
+  punicao?: string | null;
+  estado_partida?: EstadoPartida | null;
+  resumo_partida?: ResumoPart | null;
 }
 
 export interface SalaJogador {

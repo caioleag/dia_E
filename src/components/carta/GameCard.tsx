@@ -8,9 +8,11 @@ interface GameCardProps {
   item: Item;
   segundoJogador: User | null;
   emoji: string;
+  isPenalty?: boolean;
+  punicao?: string | null;
 }
 
-export default function GameCard({ item, segundoJogador, emoji }: GameCardProps) {
+export default function GameCard({ item, segundoJogador, emoji, isPenalty, punicao }: GameCardProps) {
   const conteudo = segundoJogador
     ? item.conteudo.replace(/\[JOGADOR\]/g, segundoJogador.nome?.split(" ")[0] ?? "Jogador")
     : item.conteudo;
@@ -25,7 +27,13 @@ export default function GameCard({ item, segundoJogador, emoji }: GameCardProps)
     >
       {/* Header badges */}
       <div className="flex items-center justify-between mb-6">
-        <TipoBadge tipo={item.tipo} />
+        {isPenalty ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-red/20 border border-brand-red text-brand-red font-sans text-xs font-bold uppercase tracking-wide">
+            ⚠️ Penitência
+          </span>
+        ) : (
+          <TipoBadge tipo={item.tipo} />
+        )}
         <span className="flex items-center gap-1.5 text-xs font-sans font-medium text-brand-lilac">
           <span aria-hidden="true">{emoji}</span>
           {item.categoria}
@@ -46,6 +54,14 @@ export default function GameCard({ item, segundoJogador, emoji }: GameCardProps)
           <span className="font-sans text-sm text-text-secondary">
             com <span className="text-text-primary font-medium">{segundoJogador.nome}</span>
           </span>
+        </div>
+      )}
+
+      {/* Punição da sessão */}
+      {isPenalty && punicao && (
+        <div className="mt-4 pt-4 border-t border-brand-red/30">
+          <p className="font-sans text-xs text-text-disabled text-center mb-1">Punição da sessão</p>
+          <p className="font-sans text-sm text-brand-red text-center font-medium">🔥 {punicao}</p>
         </div>
       )}
 
