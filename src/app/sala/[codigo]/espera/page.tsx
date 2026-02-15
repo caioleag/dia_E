@@ -15,7 +15,15 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setupPage();
+    let cleanup: (() => void) | undefined;
+
+    setupPage().then((cleanupFn) => {
+      cleanup = cleanupFn;
+    });
+
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [codigo]);
 
   async function setupPage() {
@@ -42,8 +50,9 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
 
     setHostName((sala.users as { nome: string })?.nome ?? "Host");
     await loadPlayers(sala.id);
-    setupRealtime(sala.id, codigo);
+    const cleanup = setupRealtime(sala.id, codigo);
     setLoading(false);
+    return cleanup;
   }
 
   async function loadPlayers(salaId: string) {
@@ -59,12 +68,12 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
   }
 
   function setupRealtime(salaId: string, salaCode: string) {
-    // Listen for new players
+    // Listen for player changes (all events)
     const playersChannel = supabase
       .channel(`espera-players-${salaId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "sala_jogadores", filter: `sala_id=eq.${salaId}` },
+        { event: "*", schema: "public", table: "sala_jogadores", filter: `sala_id=eq.${salaId}` },
         () => loadPlayers(salaId)
       )
       .subscribe();
@@ -86,9 +95,15 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
       )
       .subscribe();
 
+    // Fallback polling every 3 seconds to ensure sync
+    const pollInterval = setInterval(() => {
+      loadPlayers(salaId);
+    }, 3000);
+
     return () => {
       supabase.removeChannel(playersChannel);
       supabase.removeChannel(salaChannel);
+      clearInterval(pollInterval);
     };
   }
 

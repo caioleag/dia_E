@@ -51,9 +51,18 @@ export default function SalaEntryPage({ params }: { params: Promise<{ codigo: st
     }
 
     // Join the room (upsert to avoid duplicate)
-    await supabase
+    const { error: joinError } = await supabase
       .from("sala_jogadores")
       .upsert({ sala_id: sala.id, user_id: user.id }, { onConflict: "sala_id,user_id" });
+
+    if (joinError) {
+      console.error("Error joining room:", joinError);
+      router.push("/?error=join_failed");
+      return;
+    }
+
+    // Small delay to ensure realtime propagates
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     if (sala.status === "em_jogo") {
       // Late join — just go to wait/ended screen

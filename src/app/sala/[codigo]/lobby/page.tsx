@@ -25,7 +25,15 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
-    loadData();
+    let cleanup: (() => void) | undefined;
+
+    loadData().then((cleanupFn) => {
+      cleanup = cleanupFn;
+    });
+
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, [codigo]);
 
   async function loadData() {
@@ -47,8 +55,9 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
     }
     setSala(salaData as Sala);
     await loadPlayers(salaData.id);
-    setupRealtime(salaData.id);
+    const cleanup = setupRealtime(salaData.id);
     setLoading(false);
+    return cleanup;
   }
 
   async function loadPlayers(salaId: string) {
@@ -66,12 +75,13 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   }
 
   function setupRealtime(salaId: string) {
+    // Realtime channel for player changes
     const channel = supabase
       .channel(`lobby-${salaId}`)
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*", // Listen to all events (INSERT, UPDATE, DELETE)
           schema: "public",
           table: "sala_jogadores",
           filter: `sala_id=eq.${salaId}`,
@@ -82,7 +92,15 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    // Fallback polling every 3 seconds to ensure sync
+    const pollInterval = setInterval(() => {
+      loadPlayers(salaId);
+    }, 3000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(pollInterval);
+    };
   }
 
   async function handleIniciar() {
