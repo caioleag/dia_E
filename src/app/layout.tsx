@@ -20,11 +20,6 @@ export const metadata: Metadata = {
   title: "Dia E - Falar ou Fazer",
   description: "Jogo social de Falar ou Fazer para grupos e casais",
   manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "Dia E",
-  },
   applicationName: "Dia E",
   keywords: ["falar ou fazer", "jogo", "casal", "grupo", "desafio"],
   authors: [{ name: "Dia E" }],
@@ -61,6 +56,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Dia E" />
+        <meta name="mobile-web-app-capable" content="yes" />
+      </head>
       <body className="font-sans bg-bg-deep text-text-primary min-h-screen">
         <PWAInstallPrompt />
         {children}

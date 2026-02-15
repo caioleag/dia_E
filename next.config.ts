@@ -2,29 +2,25 @@ import type { NextConfig } from "next";
 
 const withPWA = require("next-pwa")({
   dest: "public",
-  disable: false,
+  disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
-  reloadOnOnline: true,
   scope: "/",
   sw: "sw.js",
-  fallbacks: {
-    document: "/_offline",
-  },
   runtimeCaching: [
     {
       urlPattern: /^https?.*/,
       handler: "NetworkFirst",
       options: {
-        cacheName: "offlineCache",
+        cacheName: "dia-e-cache",
+        networkTimeoutSeconds: 10,
         expiration: {
           maxEntries: 200,
+          maxAgeSeconds: 365 * 24 * 60 * 60,
         },
       },
     },
   ],
-  buildExcludes: [/middleware-manifest\.json$/],
-  publicExcludes: ["!robots.txt", "!sitemap.xml"],
 });
 
 const nextConfig: NextConfig = {
