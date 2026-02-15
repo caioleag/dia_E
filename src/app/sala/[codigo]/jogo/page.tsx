@@ -223,7 +223,7 @@ function JogoContent({ codigo }: { codigo: string }) {
       )}
 
       {/* Main content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 py-8">
+      <main className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8">
         <AnimatePresence mode="wait">
           {/* State 1: Sorteio do jogador */}
           {gameState === "sorteio" && (

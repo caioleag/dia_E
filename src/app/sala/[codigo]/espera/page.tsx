@@ -117,7 +117,7 @@ export default function EsperaPage({ params }: { params: Promise<{ codigo: strin
 
   return (
     <div className="container-fixed bg-bg-deep items-center px-6 py-safe">
-      <main className="flex-1 flex flex-col items-center justify-center gap-8 w-full max-w-sm">
+      <main className="flex-1 flex flex-col items-center justify-start gap-8 w-full max-w-sm pt-16">
         {/* Status */}
         <div className="text-center">
           <div className="text-4xl mb-4" aria-hidden="true">🎲</div>

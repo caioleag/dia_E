@@ -46,7 +46,7 @@ export default function CriarSalaPage() {
         <h1 className="font-display text-xl font-bold text-text-primary">Nova Sala</h1>
       </header>
 
-      <main className="flex-1 flex flex-col justify-center gap-8 max-w-sm mx-auto w-full">
+      <main className="flex-1 flex flex-col justify-start gap-8 max-w-sm mx-auto w-full pt-12">
         {/* Modo de Jogo: Online ou Solo */}
         <div>
           <p className="font-sans text-text-secondary text-sm text-center mb-4">
