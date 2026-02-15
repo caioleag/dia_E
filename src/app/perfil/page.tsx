@@ -111,9 +111,9 @@ export default function PerfilPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg-deep">
+    <div className="h-screen bg-bg-deep flex flex-col">
       {/* Header */}
-      <header className="flex items-center gap-3 px-6 pt-safe py-4 border-b border-border-subtle">
+      <header className="flex items-center gap-3 px-6 pt-safe py-4 border-b border-border-subtle flex-shrink-0">
         <button
           onClick={() => router.back()}
           className="p-2 -ml-2 rounded-full hover:bg-bg-elevated transition-colors"
@@ -124,7 +124,7 @@ export default function PerfilPage() {
         <h1 className="font-display text-xl font-bold text-text-primary">Meu Perfil</h1>
       </header>
 
-      <div className="px-6 py-6 space-y-6 max-w-lg mx-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6 space-y-6 max-w-lg mx-auto w-full">
         {/* Profile header */}
         <div className="flex items-center gap-4">
           <Avatar src={user?.foto_url} alt={user?.nome ?? "Usuário"} size="xl" />

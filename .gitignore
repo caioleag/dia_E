@@ -44,7 +44,6 @@ import-items*.sql
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
-**/public/manifest.webmanifest
 
 # Documentation (keep in repo)
 !dia-e-completo.md
