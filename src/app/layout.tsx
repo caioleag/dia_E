@@ -19,7 +19,7 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   title: "Dia E - Falar ou Fazer",
   description: "Jogo social de Falar ou Fazer para grupos e casais",
-  // manifest is auto-generated from src/app/manifest.ts
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
