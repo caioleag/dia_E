@@ -103,7 +103,7 @@ function NonHostView({
       ? ({ id: "sj", nome: estado.segundoJogador.nome, foto_url: estado.segundoJogador.foto_url, email: null, created_at: "", onboarding_completo: true } as User)
       : null;
     return (
-      <div className="flex flex-col items-center gap-6 w-full">
+      <div className="flex flex-col items-center gap-6 w-full max-w-md">
         <GameCard item={card} segundoJogador={seg} emoji={getEmoji(card.categoria)} isPenalty={estado.isPenalty} />
         {/* Reações */}
         <div className="flex flex-col items-center gap-3">
@@ -114,7 +114,7 @@ function NonHostView({
                 key={emoji}
                 onClick={() => onReagir(emoji)}
                 disabled={jaReagiu}
-                className={`text-3xl transition-all active:scale-125 ${jaReagiu ? "opacity-30" : "hover:scale-125"}`}
+                className={`text-3xl transition-all active:scale-125 ${jaReagiu ? "opacity-30 cursor-not-allowed" : "hover:scale-125 cursor-pointer"}`}
               >
                 {emoji}
               </button>
@@ -168,7 +168,16 @@ function JogoContent({ codigo }: { codigo: string }) {
   // Computed: escalada nivel based on current round
   const nivelEscalada = sala?.modo_escalada ? Math.min(Math.ceil(rodada / 3), 3) : undefined;
 
-  useEffect(() => { loadData(); }, [codigo]);
+  useEffect(() => { 
+    loadData(); 
+    
+    // Cleanup function
+    return () => {
+      if (reactionChannelRef.current) {
+        reactionChannelRef.current.unsubscribe();
+      }
+    };
+  }, [codigo]);
 
   // Reset jaReagiu when card changes
   useEffect(() => { setJaReagiu(false); }, [estadoPartida?.cartaAtual?.id]);
@@ -193,8 +202,11 @@ function JogoContent({ codigo }: { codigo: string }) {
       jogadorAtual: jogadorAtual ? { id: jogadorAtual.id, nome: jogadorAtual.nome, foto_url: jogadorAtual.foto_url } : null,
       segundoJogador: segundoJogador ? { nome: segundoJogador.nome, foto_url: segundoJogador.foto_url } : null,
     };
-    supabase.from("salas").update({ estado_partida: estado }).eq("id", sala.id);
-  }, [gameState, cartaAtual, rodada, isPenalty, isHost]);
+    // Update asynchronously but don't block
+    (async () => {
+      await supabase.from("salas").update({ estado_partida: estado }).eq("id", sala.id);
+    })();
+  }, [gameState, cartaAtual, rodada, isPenalty, isHost, sala, jogadorAtual, segundoJogador, tipoAtual]);
 
   async function loadData() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -397,7 +409,7 @@ function JogoContent({ codigo }: { codigo: string }) {
             </span>
           )}
         </header>
-        <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8">
+        <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 overflow-visible">
           <NonHostView estado={estadoPartida} onReagir={handleReagir} jaReagiu={jaReagiu} />
         </main>
       </div>
@@ -464,7 +476,7 @@ function JogoContent({ codigo }: { codigo: string }) {
         </div>
       )}
 
-      <main className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8">
+      <main className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8 overflow-visible">
         <AnimatePresence mode="wait">
           {/* Sorteio */}
           {gameState === "sorteio" && (

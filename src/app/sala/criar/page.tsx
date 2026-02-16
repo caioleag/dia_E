@@ -211,7 +211,7 @@ export default function CriarSalaPage() {
           </p>
         </div>
 
-        <Button onClick={handleCriar} loading={loading} className="w-full">
+        <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
           Criar Sala
         </Button>
       </main>

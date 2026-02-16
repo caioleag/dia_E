@@ -225,7 +225,7 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
         </div>
       )}
 
-      <div className="pb-safe flex flex-col gap-3 py-4">
+      <div className="pb-safe flex flex-col gap-3 py-4 px-4">
         <button
           onClick={handleCancelar}
           disabled={cancelling}
