@@ -8,6 +8,7 @@ import Slider from "@/components/ui/Slider";
 import { CATEGORIAS_GRUPO, CATEGORIAS_CASAL, NIVEL_LABELS, type User, type Preferencia } from "@/types";
 import { ArrowLeft, Pencil, Check, X, LogOut, RotateCcw } from "lucide-react";
 import { FavoritasGrid } from "@/components/perfil/FavoritasGrid";
+import ThemeSelector from "@/components/perfil/ThemeSelector";
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -248,6 +249,11 @@ export default function PerfilPage() {
               );
             })}
           </div>
+        </section>
+
+        {/* Tema de Cores */}
+        <section>
+          <ThemeSelector />
         </section>
 
         {/* Cartas Favoritas */}

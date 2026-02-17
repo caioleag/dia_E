@@ -70,77 +70,79 @@ export function PlayerRoulette({ players, onComplete, isSpinning }: PlayerRoulet
 
   return (
     <div 
-      className="relative w-full h-32 flex items-center justify-center overflow-hidden cursor-pointer"
+      className="relative w-full flex items-center justify-center cursor-pointer py-8"
       onClick={handleSkip}
       role="button"
       aria-label="Clique para pular animação"
     >
-      {/* Indicador central fixo */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-        <div className="w-20 h-20 rounded-full border-3 border-brand-lilac shadow-lg" 
-          style={{ boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)" }}
-        />
-      </div>
+      <div className="relative w-full h-32 flex items-center justify-center">
+        {/* Indicador central fixo */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+          <div className="w-20 h-20 rounded-full border-3 border-brand-lilac shadow-lg" 
+            style={{ boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)" }}
+          />
+        </div>
 
-      {/* Container dos avatares */}
-      <div className="relative w-full h-full flex items-center justify-center">
-        <AnimatePresence mode="sync">
-          {visiblePlayers.map(({ player, offset, key }) => {
-            const isCenter = offset === 0;
-            const distance = Math.abs(offset);
-            
-            return (
-              <motion.div
-                key={key}
-                className="absolute flex flex-col items-center gap-1"
-                initial={{ x: offset * 90, scale: 0.5, opacity: 0 }}
-                animate={{
-                  x: offset * 90,
-                  scale: isCenter ? 1 : Math.max(0.5, 1 - distance * 0.3),
-                  opacity: isCenter ? 1 : Math.max(0.2, 1 - distance * 0.4),
-                  zIndex: isCenter ? 10 : 5 - distance,
-                }}
-                exit={{ scale: 0.5, opacity: 0 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 30,
-                }}
-              >
-                <div className={`${isCenter ? "ring-4 ring-brand-lilac rounded-full shadow-xl" : ""}`}>
-                  <Avatar
-                    src={player.foto_url}
-                    alt={player.nome ?? "Jogador"}
-                    size="lg"
-                  />
-                </div>
-                {isCenter && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="font-sans text-sm font-semibold text-text-primary mt-1"
-                  >
-                    {player.nome?.split(" ")[0]}
-                  </motion.p>
-                )}
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </div>
+        {/* Container dos avatares */}
+        <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
+          <AnimatePresence mode="sync">
+            {visiblePlayers.map(({ player, offset, key }) => {
+              const isCenter = offset === 0;
+              const distance = Math.abs(offset);
+              
+              return (
+                <motion.div
+                  key={key}
+                  className="absolute flex flex-col items-center gap-1"
+                  initial={{ x: offset * 90, scale: 0.5, opacity: 0 }}
+                  animate={{
+                    x: offset * 90,
+                    scale: isCenter ? 1 : Math.max(0.5, 1 - distance * 0.3),
+                    opacity: isCenter ? 1 : Math.max(0.2, 1 - distance * 0.4),
+                    zIndex: isCenter ? 10 : 5 - distance,
+                  }}
+                  exit={{ scale: 0.5, opacity: 0 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                >
+                  <div className={`${isCenter ? "ring-4 ring-brand-lilac rounded-full shadow-xl" : ""}`}>
+                    <Avatar
+                      src={player.foto_url}
+                      alt={player.nome ?? "Jogador"}
+                      size="lg"
+                    />
+                  </div>
+                  {isCenter && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="font-sans text-sm font-semibold text-text-primary mt-1"
+                    >
+                      {player.nome?.split(" ")[0]}
+                    </motion.p>
+                  )}
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
 
-      {/* Gradientes laterais para fade */}
-      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-bg-deep via-bg-deep/50 to-transparent pointer-events-none z-30" />
-      <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-bg-deep via-bg-deep/50 to-transparent pointer-events-none z-30" />
+        {/* Gradientes laterais para fade */}
+        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-bg-deep via-bg-deep/50 to-transparent pointer-events-none z-30" />
+        <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-bg-deep via-bg-deep/50 to-transparent pointer-events-none z-30" />
+      </div>
       
       {/* Dica para pular */}
       {isSpinning && !skipped && (
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 z-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 z-30 pointer-events-none"
         >
-          <p className="font-sans text-xs text-text-disabled">
+          <p className="font-sans text-xs text-text-disabled text-center">
             Toque para pular
           </p>
         </motion.div>

@@ -6,6 +6,11 @@
   :root {
     --font-inter: "Inter", sans-serif;
     --font-playfair: "Playfair Display", serif;
+    
+    /* Tema de cores dinâmico - valores padrão (rosa) */
+    --color-brand-primary: #6B21A8;
+    --color-brand-secondary: #EC4899;
+    --color-brand-accent: #A855F7;
   }
 
   * {
@@ -83,7 +88,7 @@
 
   /* Gradient backgrounds */
   .bg-gradient-brand {
-    background: linear-gradient(135deg, #6b21a8, #ec4899);
+    background: linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-secondary));
   }
 
   .bg-gradient-casal {

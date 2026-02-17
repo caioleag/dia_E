@@ -4,6 +4,7 @@ import "./globals.css";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import { NavigationEvents } from "@/components/NavigationEvents";
 import { PageTransition } from "@/components/PageTransition";
+import { ClientProviders } from "@/components/ClientProviders";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -66,11 +67,13 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="font-sans bg-bg-deep text-text-primary min-h-screen">
-        <NavigationEvents />
-        <PWAInstallPrompt />
-        <PageTransition>
-          {children}
-        </PageTransition>
+        <ClientProviders>
+          <NavigationEvents />
+          <PWAInstallPrompt />
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </ClientProviders>
       </body>
     </html>
   );
