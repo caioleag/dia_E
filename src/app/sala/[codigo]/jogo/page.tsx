@@ -401,17 +401,7 @@ function JogoContent({ codigo }: { codigo: string }) {
       return;
     }
 
-    // Aplicar bias do termômetro no pular também
-    let item: Item;
-    if (nivelPreferido !== null) {
-      const cap = nivelEscalada ?? 3;
-      const alvo = Math.min(nivelPreferido, cap);
-      const preferred = items.filter((i: any) => i.nivel === alvo);
-      const pool = preferred.length > 0 && Math.random() < 0.8 ? preferred : items;
-      item = pool[Math.floor(Math.random() * pool.length)] as Item;
-    } else {
-      item = items[Math.floor(Math.random() * items.length)] as Item;
-    }
+    const item = items[Math.floor(Math.random() * items.length)] as Item;
     let seg: User | null = null;
     if (item.quem === "Dupla" || item.conteudo.includes("[JOGADOR]")) {
       const others = players.filter((p) => p.id !== jogadorAtual.id);
@@ -551,7 +541,7 @@ function JogoContent({ codigo }: { codigo: string }) {
             <p className="font-sans text-xs font-medium text-text-secondary mb-3">Intensidade preferida</p>
             <div className="flex flex-col gap-1.5 mb-3">
               {([3, 2, 1] as const).map((nivel) => {
-                const ativo = nivelPreferido !== null && nivel <= nivelPreferido;
+                const ativo = nivelPreferido === nivel;
                 const cores: Record<number, string> = {
                   3: "border-brand-red bg-brand-red/15 text-brand-red",
                   2: "border-brand-amber bg-brand-amber/15 text-brand-amber",

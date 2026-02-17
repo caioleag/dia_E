@@ -84,6 +84,14 @@ export interface Item {
   conteudo: string;
 }
 
+export interface Curiosidade {
+  id: string;
+  conteudo: string;
+  categoria: string | null;
+  ativo: boolean;
+  created_at: string;
+}
+
 export interface Favorita {
   id: string;
   user_id: string;

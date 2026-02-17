@@ -63,26 +63,38 @@ export async function sortearItem(
     const playerNivel = prefs.get(`${jogador.id}-${modo}-${categoria}`) ?? 1;
     const nivelMax = nivelMaxOverride !== undefined ? Math.min(playerNivel, nivelMaxOverride) : playerNivel;
 
-    // Query items from Supabase
-    const { data: items } = await supabase
-      .from("items")
-      .select("*")
-      .eq("modo", modo === "grupo" ? "Grupo" : "Casal")
-      .eq("categoria", categoria)
-      .eq("tipo", tipo)
-      .lte("nivel", nivelMax)
-      .limit(20);
-
-    if (!items || items.length === 0) continue;
-
     // Nível efetivo do termômetro: só aplica se dentro do limite do jogador
     const nivelEfetivo = nivelPreferido !== undefined && nivelPreferido <= nivelMax
       ? nivelPreferido
       : undefined;
 
-    // Sortear item considerando favoritas (10x) e nível preferido (6x)
-    const item = (todasFavoritas.size > 0 || nivelEfetivo !== undefined)
-      ? sortearComPeso(items as Item[], todasFavoritas, nivelEfetivo)
+    const baseQuery = supabase
+      .from("items")
+      .select("*")
+      .eq("modo", modo === "grupo" ? "Grupo" : "Casal")
+      .eq("categoria", categoria)
+      .eq("tipo", tipo);
+
+    // Quando termômetro está ativo: busca diretamente o nível preferido.
+    // Isso garante que o pool de 20 cartas seja majoritariamente daquele nível.
+    // Fallback para range completo se não houver cartas naquele nível.
+    let items: any[] | null = null;
+    if (nivelEfetivo !== undefined) {
+      const { data: preferred } = await baseQuery.eq("nivel", nivelEfetivo).limit(20);
+      if (preferred && preferred.length > 0) {
+        items = preferred;
+      }
+    }
+    if (!items) {
+      const { data: fallback } = await baseQuery.lte("nivel", nivelMax).limit(20);
+      items = fallback;
+    }
+
+    if (!items || items.length === 0) continue;
+
+    // Sortear item considerando favoritas (10x)
+    const item = todasFavoritas.size > 0
+      ? sortearComPeso(items as Item[], todasFavoritas)
       : items[Math.floor(Math.random() * items.length)] as Item;
 
     // Check if item involves a second player
@@ -184,23 +196,16 @@ export async function loadFavoritasSessao(playerIds: string[]): Promise<Set<stri
  * Sorteia um item de uma lista considerando pesos de favoritos
  * Favoritos têm peso 10, normais têm peso 1
  */
-function sortearComPeso(items: Item[], favoritasIds: Set<string>, nivelPreferido?: number): Item {
+function sortearComPeso(items: Item[], favoritasIds: Set<string>): Item {
   const PESO_FAVORITA = 10;
-  const PESO_NIVEL = 6; // bias forte para o nível do termômetro
 
-  function getPeso(item: Item): number {
-    let peso = favoritasIds.has(item.id) ? PESO_FAVORITA : 1;
-    if (nivelPreferido !== undefined && item.nivel === nivelPreferido) {
-      peso *= PESO_NIVEL;
-    }
-    return peso;
-  }
+  const pesoTotal = items.reduce((sum, item) => {
+    return sum + (favoritasIds.has(item.id) ? PESO_FAVORITA : 1);
+  }, 0);
 
-  const pesoTotal = items.reduce((sum, item) => sum + getPeso(item), 0);
   let random = Math.random() * pesoTotal;
-
   for (const item of items) {
-    random -= getPeso(item);
+    random -= favoritasIds.has(item.id) ? PESO_FAVORITA : 1;
     if (random <= 0) return item;
   }
 

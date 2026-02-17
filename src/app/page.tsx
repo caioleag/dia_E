@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import Avatar from "@/components/ui/Avatar";
 import Button from "@/components/ui/Button";
 import { User as UserIcon, Plus, LogIn, AlertCircle } from "lucide-react";
-import { type User, type Sala } from "@/types";
+import { type User, type Sala, type Curiosidade } from "@/types";
 import { encerrarSala } from "@/lib/sala";
 
 export default function HomePage() {
@@ -19,6 +19,8 @@ export default function HomePage() {
   const [joinCode, setJoinCode] = useState("");
   const [loading, setLoading] = useState(true);
   const [encerrandoSala, setEncerrandoSala] = useState(false);
+  const [curiosidade, setCuriosidade] = useState<Curiosidade | null>(null);
+  const [curiosidadePool, setCuriosidadePool] = useState<Curiosidade[]>([]);
 
   useEffect(() => {
     loadData();
@@ -41,7 +43,25 @@ export default function HomePage() {
 
     if (userData) setUser(userData as User);
     if (salasData && salasData.length > 0) setActiveSala(salasData[0] as Sala);
+
+    // Carregar pool de curiosidades
+    const { data: curiData } = await supabase
+      .from("curiosidades")
+      .select("*")
+      .eq("ativo", true)
+      .limit(50);
+    if (curiData && curiData.length > 0) {
+      const pool = curiData as Curiosidade[];
+      setCuriosidadePool(pool);
+      setCuriosidade(pool[Math.floor(Math.random() * pool.length)]);
+    }
+
     setLoading(false);
+  }
+
+  function proximaCuriosidade() {
+    if (curiosidadePool.length === 0) return;
+    setCuriosidade(curiosidadePool[Math.floor(Math.random() * curiosidadePool.length)]);
   }
 
   async function handleEncerrarSala() {
@@ -184,7 +204,43 @@ export default function HomePage() {
             </Button>
           )}
         </div>
+
+        {/* Curiosidade do dia */}
+        {curiosidade && (
+          <div className="w-full max-w-xs mt-2">
+            <div className="bg-bg-surface border border-border-subtle rounded-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-sans text-[10px] font-medium text-text-disabled uppercase tracking-widest">
+                  {categoriaEmoji(curiosidade.categoria)} Você sabia?
+                </span>
+                <button
+                  onClick={proximaCuriosidade}
+                  className="font-sans text-[10px] text-text-disabled hover:text-brand-lilac transition-colors"
+                  aria-label="Próxima curiosidade"
+                >
+                  próxima →
+                </button>
+              </div>
+              <p className="font-sans text-xs text-text-secondary leading-relaxed">
+                {curiosidade.conteudo}
+              </p>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
+}
+
+function categoriaEmoji(cat: string | null): string {
+  const map: Record<string, string> = {
+    historia: "📜",
+    ciencia: "🔬",
+    fetiche: "🔥",
+    estatistica: "📊",
+    beneficio: "💚",
+    dica: "💡",
+    cultura: "🌍",
+  };
+  return cat ? (map[cat] ?? "✨") : "✨";
 }
