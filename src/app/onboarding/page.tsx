@@ -6,7 +6,7 @@ import OnboardingStep from "@/components/onboarding/OnboardingStep";
 import Button from "@/components/ui/Button";
 import { CATEGORIAS_GRUPO, CATEGORIAS_CASAL } from "@/types";
 
-const STORAGE_KEY = "dia_e_onboarding_progress";
+const STORAGE_KEY = "dia_d_onboarding_progress";
 
 interface OnboardingState {
   step: number;
@@ -102,9 +102,9 @@ export default function OnboardingPage() {
       localStorage.removeItem(STORAGE_KEY);
 
       // Check if there's a pending sala to join
-      const pendingSala = localStorage.getItem("dia_e_pending_sala");
+      const pendingSala = localStorage.getItem("dia_d_pending_sala");
       if (pendingSala) {
-        localStorage.removeItem("dia_e_pending_sala");
+        localStorage.removeItem("dia_d_pending_sala");
         router.push(`/sala/${pendingSala}`);
       } else {
         router.push("/");
@@ -131,7 +131,7 @@ export default function OnboardingPage() {
           🎭
         </div>
         <h1 className="font-display text-3xl font-bold text-text-primary mb-4">
-          Bem-vindo ao Dia E
+          Bem-vindo ao Dia D
         </h1>
         <p className="font-sans text-text-secondary text-base leading-relaxed max-w-sm mb-8">
           Antes de começar, vamos configurar suas preferências de conteúdo. Você decide o nível de intensidade para cada categoria — o jogo se adapta a você.

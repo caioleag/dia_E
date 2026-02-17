@@ -16,7 +16,7 @@ export const TEMAS: ThemeColors[] = [
   {
     id: "rose",
     nome: "Rosa Vibrante",
-    descricao: "O clássico Dia E",
+    descricao: "O clássico Dia D",
     emoji: "💗",
     primary: "#6B21A8",
     secondary: "#EC4899",
@@ -99,7 +99,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Carregar tema salvo do localStorage
-    const savedThemeId = localStorage.getItem("dia-e-theme");
+    const savedThemeId = localStorage.getItem("dia-d-theme");
     if (savedThemeId) {
       const foundTheme = TEMAS.find((t) => t.id === savedThemeId);
       if (foundTheme) {
@@ -114,7 +114,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (foundTheme) {
       setTemaState(foundTheme);
       applyTheme(foundTheme);
-      localStorage.setItem("dia-e-theme", temaId);
+      localStorage.setItem("dia-d-theme", temaId);
     }
   };
 

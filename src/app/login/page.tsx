@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import Button from "@/components/ui/Button";
 
@@ -51,9 +52,7 @@ export default function LoginPage() {
 
       {/* Logo + Tagline */}
       <div className="flex flex-col items-center gap-4 mb-16">
-        <h1 className="font-display text-6xl font-bold gradient-text tracking-tight">
-          Dia E
-        </h1>
+        <Image src="/logo.svg" alt="Dia D" width={120} height={120} priority />
         <p className="font-sans text-text-secondary text-base text-center max-w-xs">
           O jogo que transforma a noite em algo inesquecível.
         </p>

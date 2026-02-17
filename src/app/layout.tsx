@@ -20,12 +20,12 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Dia E - Falar ou Fazer",
+  title: "Dia D - Falar ou Fazer",
   description: "Jogo social de Falar ou Fazer para grupos e casais",
   manifest: "/manifest.json",
-  applicationName: "Dia E",
+  applicationName: "Dia D",
   keywords: ["falar ou fazer", "jogo", "casal", "grupo", "desafio"],
-  authors: [{ name: "Dia E" }],
+  authors: [{ name: "Dia D" }],
   icons: {
     icon: [
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -63,7 +63,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Dia E" />
+        <meta name="apple-mobile-web-app-title" content="Dia D" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className="font-sans bg-bg-deep text-text-primary min-h-screen">

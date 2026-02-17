@@ -12,7 +12,7 @@ const withPWA = require("next-pwa")({
       urlPattern: /^https?.*/,
       handler: "NetworkFirst",
       options: {
-        cacheName: "dia-e-cache",
+        cacheName: "dia-d-cache",
         networkTimeoutSeconds: 10,
         expiration: {
           maxEntries: 200,

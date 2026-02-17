@@ -1,5 +1,5 @@
 // IndexedDB para cache de cartas offline
-const DB_NAME = "dia-e-offline";
+const DB_NAME = "dia-d-offline";
 const DB_VERSION = 1;
 const STORE_NAME = "cartas";
 

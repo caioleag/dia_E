@@ -18,7 +18,7 @@ export default function SalaEntryPage({ params }: { params: Promise<{ codigo: st
 
     if (!user) {
       // Save the sala code for after login
-      localStorage.setItem("dia_e_pending_sala", codigo);
+      localStorage.setItem("dia_d_pending_sala", codigo);
       router.push("/login");
       return;
     }
