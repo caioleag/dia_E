@@ -9,7 +9,7 @@ import { encerrarSala } from "@/lib/sala";
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
 import GameCard from "@/components/carta/GameCard";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, Thermometer } from "lucide-react";
 import {
   type User,
   type Sala,
@@ -171,6 +171,10 @@ function JogoContent({ codigo }: { codigo: string }) {
   // Roulette state
   const [showRoulette, setShowRoulette] = useState(false);
   const [isRouletteSpinning, setIsRouletteSpinning] = useState(false);
+
+  // Termômetro de intensidade
+  const [nivelPreferido, setNivelPreferido] = useState<number | null>(null);
+  const [showTermometro, setShowTermometro] = useState(false);
 
   // Escalada level-up notification
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -355,7 +359,8 @@ function JogoContent({ codigo }: { codigo: string }) {
       sala.categorias_ativas ?? undefined,
       nivelEscalada,
       favoritasJogador,
-      favoritasSessao
+      favoritasSessao,
+      nivelPreferido ?? undefined
     );
 
     if (!result) {
@@ -396,7 +401,17 @@ function JogoContent({ codigo }: { codigo: string }) {
       return;
     }
 
-    const item = items[Math.floor(Math.random() * items.length)] as Item;
+    // Aplicar bias do termômetro no pular também
+    let item: Item;
+    if (nivelPreferido !== null) {
+      const cap = nivelEscalada ?? 3;
+      const alvo = Math.min(nivelPreferido, cap);
+      const preferred = items.filter((i: any) => i.nivel === alvo);
+      const pool = preferred.length > 0 && Math.random() < 0.8 ? preferred : items;
+      item = pool[Math.floor(Math.random() * pool.length)] as Item;
+    } else {
+      item = items[Math.floor(Math.random() * items.length)] as Item;
+    }
     let seg: User | null = null;
     if (item.quem === "Dupla" || item.conteudo.includes("[JOGADOR]")) {
       const others = players.filter((p) => p.id !== jogadorAtual.id);
@@ -527,6 +542,65 @@ function JogoContent({ codigo }: { codigo: string }) {
           </button>
         </div>
       )}
+
+      {/* ── Termômetro de intensidade ─────────────────────────────────────────── */}
+      {showTermometro && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setShowTermometro(false)} />
+          <div className="absolute bottom-20 left-4 bg-bg-surface border border-border-subtle rounded-2xl shadow-card p-4 z-50 w-44 animate-fade-slide-in">
+            <p className="font-sans text-xs font-medium text-text-secondary mb-3">Intensidade preferida</p>
+            <div className="flex flex-col gap-1.5 mb-3">
+              {([3, 2, 1] as const).map((nivel) => {
+                const ativo = nivelPreferido !== null && nivel <= nivelPreferido;
+                const cores: Record<number, string> = {
+                  3: "border-brand-red bg-brand-red/15 text-brand-red",
+                  2: "border-brand-amber bg-brand-amber/15 text-brand-amber",
+                  1: "border-brand-lilac bg-brand-lilac/15 text-brand-lilac",
+                };
+                const emojis: Record<number, string> = { 3: "🔥", 2: "✨", 1: "💫" };
+                const labels: Record<number, string> = { 3: "Intenso", 2: "Médio", 1: "Leve" };
+                return (
+                  <button
+                    key={nivel}
+                    onClick={() => setNivelPreferido(nivelPreferido === nivel ? null : nivel)}
+                    className={`w-full py-2 px-3 rounded-xl border font-sans text-sm font-medium transition-all flex items-center gap-2 ${
+                      ativo ? cores[nivel] : "border-border-subtle bg-bg-elevated text-text-disabled"
+                    }`}
+                  >
+                    <span>{emojis[nivel]}</span>
+                    <span>{labels[nivel]}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="font-sans text-[10px] text-text-disabled leading-tight">
+              Não substitui o limite de cada jogador
+            </p>
+          </div>
+        </>
+      )}
+
+      {/* Thermometer button */}
+      <button
+        onClick={() => setShowTermometro((v) => !v)}
+        aria-label="Intensidade preferida"
+        className={`absolute bottom-8 left-4 p-2.5 rounded-full bg-bg-surface border shadow-card transition-all z-40 ${
+          nivelPreferido !== null
+            ? nivelPreferido === 3
+              ? "border-brand-red text-brand-red"
+              : nivelPreferido === 2
+              ? "border-brand-amber text-brand-amber"
+              : "border-brand-lilac text-brand-lilac"
+            : "border-border-subtle text-text-disabled hover:text-text-secondary hover:border-border-subtle/60"
+        }`}
+      >
+        <Thermometer size={17} />
+        {nivelPreferido !== null && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-bg-surface border border-current font-sans text-[10px] font-bold flex items-center justify-center">
+            {nivelPreferido}
+          </span>
+        )}
+      </button>
 
       <main className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8 overflow-visible">
         <AnimatePresence mode="wait">

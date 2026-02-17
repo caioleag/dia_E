@@ -30,7 +30,8 @@ export async function sortearItem(
   categoriasAtivas?: string[], // session-level category filter
   nivelMaxOverride?: number, // escalada: caps nivel globally
   favoritasJogador?: Set<string>, // favoritas do jogador atual
-  favoritasSessao?: Set<string> // favoritas de todos da sessão
+  favoritasSessao?: Set<string>, // favoritas de todos da sessão
+  nivelPreferido?: number // termômetro: bias de probabilidade por nível (não substitui o limite do jogador)
 ): Promise<SorteioResult | null> {
   const supabase = createClient();
 
@@ -74,9 +75,14 @@ export async function sortearItem(
 
     if (!items || items.length === 0) continue;
 
-    // Sortear item considerando favoritas (10x mais chance)
-    const item = todasFavoritas.size > 0 
-      ? sortearComPeso(items as Item[], todasFavoritas)
+    // Nível efetivo do termômetro: só aplica se dentro do limite do jogador
+    const nivelEfetivo = nivelPreferido !== undefined && nivelPreferido <= nivelMax
+      ? nivelPreferido
+      : undefined;
+
+    // Sortear item considerando favoritas (10x) e nível preferido (6x)
+    const item = (todasFavoritas.size > 0 || nivelEfetivo !== undefined)
+      ? sortearComPeso(items as Item[], todasFavoritas, nivelEfetivo)
       : items[Math.floor(Math.random() * items.length)] as Item;
 
     // Check if item involves a second player
@@ -178,28 +184,25 @@ export async function loadFavoritasSessao(playerIds: string[]): Promise<Set<stri
  * Sorteia um item de uma lista considerando pesos de favoritos
  * Favoritos têm peso 10, normais têm peso 1
  */
-function sortearComPeso(items: Item[], favoritasIds: Set<string>): Item {
+function sortearComPeso(items: Item[], favoritasIds: Set<string>, nivelPreferido?: number): Item {
   const PESO_FAVORITA = 10;
-  const PESO_NORMAL = 1;
+  const PESO_NIVEL = 6; // bias forte para o nível do termômetro
 
-  // Calcular peso total
-  const pesoTotal = items.reduce((sum, item) => {
-    const peso = favoritasIds.has(item.id) ? PESO_FAVORITA : PESO_NORMAL;
-    return sum + peso;
-  }, 0);
-
-  // Sortear número aleatório
-  let random = Math.random() * pesoTotal;
-
-  // Encontrar o item sorteado
-  for (const item of items) {
-    const peso = favoritasIds.has(item.id) ? PESO_FAVORITA : PESO_NORMAL;
-    random -= peso;
-    if (random <= 0) {
-      return item;
+  function getPeso(item: Item): number {
+    let peso = favoritasIds.has(item.id) ? PESO_FAVORITA : 1;
+    if (nivelPreferido !== undefined && item.nivel === nivelPreferido) {
+      peso *= PESO_NIVEL;
     }
+    return peso;
   }
 
-  // Fallback (não deveria acontecer)
+  const pesoTotal = items.reduce((sum, item) => sum + getPeso(item), 0);
+  let random = Math.random() * pesoTotal;
+
+  for (const item of items) {
+    random -= getPeso(item);
+    if (random <= 0) return item;
+  }
+
   return items[items.length - 1];
 }
