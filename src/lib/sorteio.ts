@@ -13,9 +13,17 @@ export async function sortearItem(
   allPlayers: User[],
   prefs: Map<string, number>, // key: `${userId}-${modo}-${categoria}`
   categoriasAtivas?: string[], // session-level category filter
-  nivelMaxOverride?: number // escalada: caps nivel globally
+  nivelMaxOverride?: number, // escalada: caps nivel globally
+  favoritasJogador?: Set<string>, // favoritas do jogador atual
+  favoritasSessao?: Set<string> // favoritas de todos da sessão
 ): Promise<SorteioResult | null> {
   const supabase = createClient();
+
+  // Unir favoritas do jogador + sessão (sem duplicar)
+  const todasFavoritas = new Set<string>([
+    ...(favoritasJogador || []),
+    ...(favoritasSessao || [])
+  ]);
 
   // Get categories where this player has nivel >= 1 AND category is active in session
   const availableCategories: string[] = [];
@@ -51,8 +59,10 @@ export async function sortearItem(
 
     if (!items || items.length === 0) continue;
 
-    // Pick a random item from results
-    const item = items[Math.floor(Math.random() * items.length)] as Item;
+    // Sortear item considerando favoritas (10x mais chance)
+    const item = todasFavoritas.size > 0 
+      ? sortearComPeso(items as Item[], todasFavoritas)
+      : items[Math.floor(Math.random() * items.length)] as Item;
 
     // Check if item involves a second player
     const needsSecondPlayer =
@@ -106,4 +116,75 @@ export async function loadPrefsForPlayers(
     });
   }
   return map;
+}
+
+// ============================================
+// SISTEMA DE FAVORITOS
+// ============================================
+
+/**
+ * Busca IDs das cartas favoritas de um usuário
+ */
+export async function loadFavoritasUsuario(userId: string): Promise<Set<string>> {
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("favoritas")
+    .select("item_id")
+    .eq("user_id", userId);
+
+  const set = new Set<string>();
+  if (data) {
+    data.forEach((f) => set.add(f.item_id));
+  }
+  return set;
+}
+
+/**
+ * Busca IDs das cartas favoritas de todos os jogadores de uma sessão
+ * (união de favoritos de todos)
+ */
+export async function loadFavoritasSessao(playerIds: string[]): Promise<Set<string>> {
+  if (playerIds.length === 0) return new Set();
+  
+  const supabase = createClient();
+  const { data } = await supabase
+    .from("favoritas")
+    .select("item_id")
+    .in("user_id", playerIds);
+
+  const set = new Set<string>();
+  if (data) {
+    data.forEach((f) => set.add(f.item_id));
+  }
+  return set;
+}
+
+/**
+ * Sorteia um item de uma lista considerando pesos de favoritos
+ * Favoritos têm peso 10, normais têm peso 1
+ */
+function sortearComPeso(items: Item[], favoritasIds: Set<string>): Item {
+  const PESO_FAVORITA = 10;
+  const PESO_NORMAL = 1;
+
+  // Calcular peso total
+  const pesoTotal = items.reduce((sum, item) => {
+    const peso = favoritasIds.has(item.id) ? PESO_FAVORITA : PESO_NORMAL;
+    return sum + peso;
+  }, 0);
+
+  // Sortear número aleatório
+  let random = Math.random() * pesoTotal;
+
+  // Encontrar o item sorteado
+  for (const item of items) {
+    const peso = favoritasIds.has(item.id) ? PESO_FAVORITA : PESO_NORMAL;
+    random -= peso;
+    if (random <= 0) {
+      return item;
+    }
+  }
+
+  // Fallback (não deveria acontecer)
+  return items[items.length - 1];
 }

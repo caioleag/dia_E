@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/lib/supabase/client";
 import { JogoProvider, useJogo } from "@/lib/jogo-context";
-import { loadPrefsForPlayers } from "@/lib/sorteio";
+import { loadPrefsForPlayers, loadFavoritasUsuario, loadFavoritasSessao } from "@/lib/sorteio";
 import { encerrarSala } from "@/lib/sala";
 import Button from "@/components/ui/Button";
 import Avatar from "@/components/ui/Avatar";
@@ -70,10 +70,12 @@ function NonHostView({
   estado,
   onReagir,
   jaReagiu,
+  currentUserId,
 }: {
   estado: EstadoPartida | null;
   onReagir: (emoji: string) => void;
   jaReagiu: boolean;
+  currentUserId: string | null;
 }) {
   const allCats = [...CATEGORIAS_GRUPO, ...CATEGORIAS_CASAL];
   const getEmoji = (cat: string) => allCats.find((c) => c.nome === cat)?.emoji ?? "🎲";
@@ -104,7 +106,13 @@ function NonHostView({
       : null;
     return (
       <div className="flex flex-col items-center gap-6 w-full max-w-md">
-        <GameCard item={card} segundoJogador={seg} emoji={getEmoji(card.categoria)} isPenalty={estado.isPenalty} />
+        <GameCard 
+          item={card} 
+          segundoJogador={seg} 
+          emoji={getEmoji(card.categoria)} 
+          isPenalty={estado.isPenalty}
+          currentUserId={currentUserId || undefined}
+        />
         {/* Reações */}
         <div className="flex flex-col items-center gap-3">
           <p className="font-sans text-xs text-text-disabled">Sua reação</p>
@@ -148,6 +156,7 @@ function JogoContent({ codigo }: { codigo: string }) {
   const [encerrandoSala, setEncerrandoSala] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const [currentUserNome, setCurrentUserNome] = useState<string>("Jogador");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Feature states
   const [isPenalty, setIsPenalty] = useState(false);
@@ -211,6 +220,8 @@ function JogoContent({ codigo }: { codigo: string }) {
   async function loadData() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { router.push("/login"); return; }
+
+    setCurrentUserId(user.id); // Salvar ID do usuário
 
     const { data: salaData } = await supabase.from("salas").select("*").eq("codigo", codigo).single();
     if (!salaData || salaData.status !== "em_jogo") { router.push("/"); return; }
@@ -299,11 +310,18 @@ function JogoContent({ codigo }: { codigo: string }) {
     setIsPenalty(false);
     escolherTipo(tipo);
 
+    // Carregar favoritas do jogador atual e de todos da sessão
+    const favoritasJogador = await loadFavoritasUsuario(jogadorAtual.id);
+    const playerIds = players.map(p => p.id).filter(id => !id.startsWith('fictional-')); // Excluir ficticios
+    const favoritasSessao = playerIds.length > 0 ? await loadFavoritasSessao(playerIds) : new Set<string>();
+
     const { sortearItem } = await import("@/lib/sorteio");
     const result = await sortearItem(
       jogadorAtual, tipo, sala.modo, players, prefs,
       sala.categorias_ativas ?? undefined,
-      nivelEscalada
+      nivelEscalada,
+      favoritasJogador,
+      favoritasSessao
     );
 
     if (!result) {
@@ -410,7 +428,7 @@ function JogoContent({ codigo }: { codigo: string }) {
           )}
         </header>
         <main className="flex-1 flex flex-col items-center justify-center px-6 pb-8 overflow-visible">
-          <NonHostView estado={estadoPartida} onReagir={handleReagir} jaReagiu={jaReagiu} />
+          <NonHostView estado={estadoPartida} onReagir={handleReagir} jaReagiu={jaReagiu} currentUserId={currentUserId} />
         </main>
       </div>
     );
@@ -531,6 +549,7 @@ function JogoContent({ codigo }: { codigo: string }) {
                 emoji={getCategoriaEmoji(cartaAtual.categoria)}
                 isPenalty={isPenalty}
                 punicao={isPenalty ? sala?.punicao : undefined}
+                currentUserId={currentUserId || undefined}
               />
               {extrairTempo(cartaAtual.conteudo) > 0 && (
                 <CardTimer segundos={extrairTempo(cartaAtual.conteudo)} cardId={cartaAtual.id} />

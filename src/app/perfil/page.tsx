@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import Slider from "@/components/ui/Slider";
 import { CATEGORIAS_GRUPO, CATEGORIAS_CASAL, NIVEL_LABELS, type User, type Preferencia } from "@/types";
 import { ArrowLeft, Pencil, Check, X, LogOut, RotateCcw } from "lucide-react";
+import { FavoritasGrid } from "@/components/perfil/FavoritasGrid";
 
 export default function PerfilPage() {
   const router = useRouter();
@@ -248,6 +249,18 @@ export default function PerfilPage() {
             })}
           </div>
         </section>
+
+        {/* Cartas Favoritas */}
+        {user && (
+          <section>
+            <h2 className="font-sans text-sm font-medium text-text-secondary uppercase tracking-widest mb-3">
+              Cartas Favoritas
+            </h2>
+            <div className="bg-bg-surface rounded-card border border-border-subtle p-4">
+              <FavoritasGrid userId={user.id} />
+            </div>
+          </section>
+        )}
 
         {/* Reset + Sign out */}
         <div className="flex flex-col gap-3 pb-safe">

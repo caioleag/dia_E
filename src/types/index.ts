@@ -79,6 +79,14 @@ export interface Item {
   conteudo: string;
 }
 
+export interface Favorita {
+  id: string;
+  user_id: string;
+  item_id: string;
+  created_at: string;
+  items?: Item; // Join opcional com a carta
+}
+
 // Categorias por modo
 export const CATEGORIAS_GRUPO = [
   { codigo: "VC", nome: "Verbal / Confissão", emoji: "💬" },

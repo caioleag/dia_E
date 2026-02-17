@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Avatar from "@/components/ui/Avatar";
 import { TipoBadge } from "@/components/ui/Badge";
 import { type Item, type User } from "@/types";
+import { FavoriteButton } from "./FavoriteButton";
 
 interface GameCardProps {
   item: Item;
@@ -10,9 +11,10 @@ interface GameCardProps {
   emoji: string;
   isPenalty?: boolean;
   punicao?: string | null;
+  currentUserId?: string; // ID do usuário logado para favoritar
 }
 
-export default function GameCard({ item, segundoJogador, emoji, isPenalty, punicao }: GameCardProps) {
+export default function GameCard({ item, segundoJogador, emoji, isPenalty, punicao, currentUserId }: GameCardProps) {
   const conteudo = segundoJogador
     ? item.conteudo.replace(/\[JOGADOR\]/g, segundoJogador.nome?.split(" ")[0] ?? "Jogador")
     : item.conteudo;
@@ -46,6 +48,13 @@ export default function GameCard({ item, segundoJogador, emoji, isPenalty, punic
           {conteudo}
         </p>
       </div>
+
+      {/* Botão Favoritar */}
+      {currentUserId && !isPenalty && (
+        <div className="flex justify-center mb-4">
+          <FavoriteButton itemId={item.id} userId={currentUserId} />
+        </div>
+      )}
 
       {/* Second player if applicable */}
       {segundoJogador && (
