@@ -48,7 +48,9 @@ export default function CriarSalaPage() {
         <h1 className="font-display text-xl font-bold text-text-primary">Nova Sala</h1>
       </header>
 
-      <main className="flex-1 overflow-y-auto flex flex-col gap-5 max-w-sm mx-auto w-full pt-4 pb-6">
+      <main className="flex-1 overflow-y-auto flex flex-col gap-5 max-w-sm mx-auto w-full pt-4 pb-8"
+        style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+      >
         {/* Modo de Jogo: Online ou Solo */}
         <div>
           <p className="font-sans text-text-secondary text-sm text-center mb-3">
@@ -211,9 +213,12 @@ export default function CriarSalaPage() {
           </p>
         </div>
 
-        <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
-          Criar Sala
-        </Button>
+        {/* Botão com espaço para glow */}
+        <div className="pt-2 pb-4">
+          <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
+            Criar Sala
+          </Button>
+        </div>
       </main>
     </div>
   );
