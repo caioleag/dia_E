@@ -12,17 +12,22 @@ interface OnboardingState {
   step: number;
   grupo: Record<string, number>;
   casal: Record<string, number>;
+  genero: string;
+  preferencia_parceiro: string;
 }
 
 const defaultState = (): OnboardingState => ({
   step: 0,
   grupo: Object.fromEntries(CATEGORIAS_GRUPO.map((c) => [c.nome, 1])),
   casal: Object.fromEntries(CATEGORIAS_CASAL.map((c) => [c.nome, 1])),
+  genero: "",
+  preferencia_parceiro: "qualquer",
 });
 
-// Steps: 0 = welcome, 1-6 = grupo, 7-14 = casal, 15 = confirm
+// Steps: 0 = welcome, 1-6 = grupo, 7-14 = casal, 15 = genero/preferencia, 16 = confirm
 const TOTAL_CONFIG_STEPS = CATEGORIAS_GRUPO.length + CATEGORIAS_CASAL.length;
-const TOTAL_STEPS = TOTAL_CONFIG_STEPS + 2; // welcome + confirm
+const GENERO_STEP = TOTAL_CONFIG_STEPS + 1;
+const CONFIRM_STEP = TOTAL_CONFIG_STEPS + 2;
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -90,10 +95,14 @@ export default function OnboardingPage() {
 
       if (prefsError) throw prefsError;
 
-      // Mark onboarding complete
+      // Mark onboarding complete + save genero/preferencia
       const { error: userError } = await supabase
         .from("users")
-        .update({ onboarding_completo: true })
+        .update({
+          onboarding_completo: true,
+          genero: state.genero || null,
+          preferencia_parceiro: state.preferencia_parceiro,
+        })
         .eq("id", user.id);
 
       if (userError) throw userError;
@@ -149,8 +158,94 @@ export default function OnboardingPage() {
     );
   }
 
+  // Genero/preferencia step
+  if (step === GENERO_STEP) {
+    const generoOpcoes = [
+      { value: "homem", label: "Homem" },
+      { value: "mulher", label: "Mulher" },
+      { value: "nao_binario", label: "Não-binário" },
+      { value: "", label: "Prefiro não dizer" },
+    ];
+    const prefOpcoes = [
+      { value: "qualquer", label: "Qualquer pessoa" },
+      { value: "mesmo_genero", label: "Mesmo gênero" },
+      { value: "genero_diferente", label: "Gênero diferente" },
+    ];
+
+    return (
+      <div className="min-h-screen flex flex-col bg-bg-deep px-6 py-12 justify-center items-center">
+        <div className="w-full max-w-sm">
+          <button
+            onClick={() => setState((p) => ({ ...p, step: p.step - 1 }))}
+            className="mb-8 p-2 -ml-2 rounded-full hover:bg-bg-elevated transition-colors text-text-secondary"
+            aria-label="Voltar"
+          >
+            ← Voltar
+          </button>
+
+          <div className="text-5xl mb-5 text-center" aria-hidden="true">👤</div>
+          <h2 className="font-display text-2xl font-bold text-text-primary mb-2 text-center">
+            Identidade
+          </h2>
+          <p className="font-sans text-text-secondary text-sm text-center mb-8">
+            Usado para emparelhamentos em atividades físicas do modo Grupo.
+          </p>
+
+          <div className="mb-6">
+            <p className="font-sans text-sm font-medium text-text-secondary mb-3">
+              Como você se identifica?
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {generoOpcoes.map((op) => (
+                <button
+                  key={op.value}
+                  onClick={() => setState((p) => ({ ...p, genero: op.value }))}
+                  className={`py-3 px-4 rounded-xl border font-sans text-sm font-medium transition-all ${
+                    state.genero === op.value
+                      ? "border-brand-lilac bg-brand-lilac/10 text-brand-lilac"
+                      : "border-border-subtle bg-bg-surface text-text-secondary hover:border-brand-lilac/50"
+                  }`}
+                >
+                  {op.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-10">
+            <p className="font-sans text-sm font-medium text-text-secondary mb-3">
+              Em atividades físicas do jogo, prefiro fazer par com...
+            </p>
+            <div className="flex flex-col gap-2">
+              {prefOpcoes.map((op) => (
+                <button
+                  key={op.value}
+                  onClick={() => setState((p) => ({ ...p, preferencia_parceiro: op.value }))}
+                  className={`py-3 px-4 rounded-xl border font-sans text-sm font-medium transition-all text-left ${
+                    state.preferencia_parceiro === op.value
+                      ? "border-brand-lilac bg-brand-lilac/10 text-brand-lilac"
+                      : "border-border-subtle bg-bg-surface text-text-secondary hover:border-brand-lilac/50"
+                  }`}
+                >
+                  {op.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <Button
+            onClick={() => setState((p) => ({ ...p, step: CONFIRM_STEP }))}
+            className="w-full"
+          >
+            Continuar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Confirm screen
-  if (step === TOTAL_CONFIG_STEPS + 1) {
+  if (step === CONFIRM_STEP) {
     return (
       <div className="min-h-screen flex flex-col bg-bg-deep px-6 justify-center items-center text-center">
         <div className="text-6xl mb-6" aria-hidden="true">✅</div>
@@ -221,7 +316,7 @@ export default function OnboardingPage() {
       onNext={() =>
         setState((p) => ({
           ...p,
-          step: p.step < TOTAL_CONFIG_STEPS + 1 ? p.step + 1 : p.step,
+          step: p.step < GENERO_STEP ? p.step + 1 : p.step,
         }))
       }
       onBack={() => setState((p) => ({ ...p, step: p.step - 1 }))}

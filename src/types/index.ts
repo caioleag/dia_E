@@ -10,7 +10,12 @@ export interface User {
   foto_url: string | null;
   created_at: string;
   onboarding_completo: boolean;
+  genero: string | null;
+  preferencia_parceiro: string | null;
 }
+
+export type Genero = "homem" | "mulher" | "nao_binario";
+export type PreferenciaParceiro = "qualquer" | "mesmo_genero" | "genero_diferente";
 
 export interface Preferencia {
   id: string;

@@ -7,6 +7,20 @@ export interface SorteioResult {
   segundoJogador: User | null;
 }
 
+export function areCompatible(a: User, b: User): boolean {
+  if (!a.genero || !b.genero) return true;
+
+  function accepts(user: User, other: User): boolean {
+    const pref = user.preferencia_parceiro ?? "qualquer";
+    if (pref === "qualquer") return true;
+    if (pref === "mesmo_genero") return user.genero === other.genero;
+    if (pref === "genero_diferente") return user.genero !== other.genero;
+    return true;
+  }
+
+  return accepts(a, b) && accepts(b, a);
+}
+
 export async function sortearItem(
   jogador: User,
   tipo: TipoItem,
@@ -76,7 +90,7 @@ export async function sortearItem(
       // Try to find a compatible second player
       const compatible = otherPlayers.filter((p) => {
         const pNivel = prefs.get(`${p.id}-${modo}-${categoria}`) ?? 0;
-        return pNivel >= item.nivel;
+        return pNivel >= item.nivel && areCompatible(jogador, p);
       });
 
       if (compatible.length === 0) {

@@ -18,6 +18,8 @@ export default function PerfilPage() {
   const [prefs, setPrefs] = useState<Preferencia[]>([]);
   const [editingNome, setEditingNome] = useState(false);
   const [nomeValue, setNomeValue] = useState("");
+  const [generoValue, setGeneroValue] = useState("");
+  const [prefParceiroValue, setPrefParceiroValue] = useState("qualquer");
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
   const [sliderValues, setSliderValues] = useState<Record<string, number>>({});
   const [showResetModal, setShowResetModal] = useState(false);
@@ -40,6 +42,8 @@ export default function PerfilPage() {
     if (userData) {
       setUser(userData as User);
       setNomeValue(userData.nome ?? "");
+      setGeneroValue(userData.genero ?? "");
+      setPrefParceiroValue(userData.preferencia_parceiro ?? "qualquer");
     }
     if (prefsData) {
       setPrefs(prefsData as Preferencia[]);
@@ -59,6 +63,12 @@ export default function PerfilPage() {
     setUser((u) => u ? { ...u, nome: nomeValue } : u);
     setEditingNome(false);
     setSaving(false);
+  }
+
+  async function saveIdentidade(genero: string, prefParceiro: string) {
+    if (!user) return;
+    await supabase.from("users").update({ genero: genero || null, preferencia_parceiro: prefParceiro }).eq("id", user.id);
+    setUser((u) => u ? { ...u, genero: genero || null, preferencia_parceiro: prefParceiro } : u);
   }
 
   async function savePref(modo: string, categoria: string, nivel: number) {
@@ -166,6 +176,66 @@ export default function PerfilPage() {
             <p className="font-sans text-sm text-text-disabled truncate mt-0.5">{user?.email}</p>
           </div>
         </div>
+
+        {/* Preferências de Parceiro */}
+        <section>
+          <h2 className="font-sans text-sm font-medium text-text-secondary uppercase tracking-widest mb-3">
+            Preferências de Parceiro
+          </h2>
+          <div className="bg-bg-surface rounded-card border border-border-subtle p-4 space-y-4">
+            <div>
+              <p className="font-sans text-xs text-text-disabled mb-2">Como você se identifica?</p>
+              <div className="grid grid-cols-2 gap-2">
+                {([
+                  { value: "homem", label: "Homem" },
+                  { value: "mulher", label: "Mulher" },
+                  { value: "nao_binario", label: "Não-binário" },
+                  { value: "", label: "Prefiro não dizer" },
+                ] as { value: string; label: string }[]).map((op) => (
+                  <button
+                    key={op.value}
+                    onClick={() => {
+                      setGeneroValue(op.value);
+                      saveIdentidade(op.value, prefParceiroValue);
+                    }}
+                    className={`py-2 px-3 rounded-xl border font-sans text-sm font-medium transition-all ${
+                      generoValue === op.value
+                        ? "border-brand-lilac bg-brand-lilac/10 text-brand-lilac"
+                        : "border-border-subtle bg-bg-elevated text-text-secondary hover:border-brand-lilac/50"
+                    }`}
+                  >
+                    {op.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="font-sans text-xs text-text-disabled mb-2">Em atividades físicas, prefiro fazer par com...</p>
+              <div className="flex flex-col gap-2">
+                {([
+                  { value: "qualquer", label: "Qualquer pessoa" },
+                  { value: "mesmo_genero", label: "Mesmo gênero" },
+                  { value: "genero_diferente", label: "Gênero diferente" },
+                ] as { value: string; label: string }[]).map((op) => (
+                  <button
+                    key={op.value}
+                    onClick={() => {
+                      setPrefParceiroValue(op.value);
+                      saveIdentidade(generoValue, op.value);
+                    }}
+                    className={`py-2 px-3 rounded-xl border font-sans text-sm font-medium transition-all text-left ${
+                      prefParceiroValue === op.value
+                        ? "border-brand-lilac bg-brand-lilac/10 text-brand-lilac"
+                        : "border-border-subtle bg-bg-elevated text-text-secondary hover:border-brand-lilac/50"
+                    }`}
+                  >
+                    {op.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Preferences — Grupo */}
         <section>
