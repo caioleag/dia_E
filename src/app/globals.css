@@ -92,7 +92,7 @@
   }
 
   .bg-gradient-casal {
-    background: linear-gradient(135deg, #9d174d, #f43f5e);
+    background: linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-secondary));
   }
 
   /* Container with fixed height and internal scroll */
@@ -115,6 +115,16 @@
   .glow-container {
     padding: 4px;
     margin: -4px;
+  }
+
+  /* Glow shadows — use CSS variables so they follow the active theme */
+  .shadow-glow {
+    box-shadow: 0 0 30px color-mix(in srgb, var(--color-brand-accent) 60%, transparent),
+                0 0 60px color-mix(in srgb, var(--color-brand-secondary) 40%, transparent);
+  }
+
+  .shadow-glow-soft {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--color-brand-accent) 40%, transparent);
   }
 }
 

@@ -79,7 +79,7 @@ export function PlayerRoulette({ players, onComplete, isSpinning }: PlayerRoulet
         {/* Indicador central fixo */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
           <div className="w-20 h-20 rounded-full border-3 border-brand-lilac shadow-lg" 
-            style={{ boxShadow: "0 0 20px rgba(168, 85, 247, 0.4)" }}
+            style={{ boxShadow: "0 0 20px color-mix(in srgb, var(--color-brand-accent) 40%, transparent)" }}
           />
         </div>
 

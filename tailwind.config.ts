@@ -41,8 +41,6 @@ const config: Config = {
         sans: ["var(--font-inter)", "sans-serif"],
       },
       boxShadow: {
-        glow: "0 0 30px rgba(168, 85, 247, 0.6), 0 0 60px rgba(236, 72, 153, 0.4)",
-        "glow-soft": "0 0 20px rgba(168, 85, 247, 0.4)",
         card: "0 4px 24px rgba(0,0,0,0.4)",
         "card-lg": "0 8px 32px rgba(0,0,0,0.6)",
       },

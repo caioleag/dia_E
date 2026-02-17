@@ -26,7 +26,7 @@ export default function LoginPage() {
       className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
       style={{
         background:
-          "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(107, 33, 168, 0.15) 0%, transparent 70%), #0A0A0F",
+          "radial-gradient(ellipse 80% 60% at 50% 50%, color-mix(in srgb, var(--color-brand-primary) 15%, transparent) 0%, transparent 70%), #0A0A0F",
       }}
     >
       {/* Background glow orbs */}
@@ -35,7 +35,7 @@ export default function LoginPage() {
         className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full opacity-10 pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, #6B21A8 0%, transparent 70%)",
+            "radial-gradient(circle, var(--color-brand-primary) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />
@@ -44,7 +44,7 @@ export default function LoginPage() {
         className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full opacity-10 pointer-events-none"
         style={{
           background:
-            "radial-gradient(circle, #EC4899 0%, transparent 70%)",
+            "radial-gradient(circle, var(--color-brand-secondary) 0%, transparent 70%)",
           filter: "blur(60px)",
         }}
       />

@@ -48,9 +48,8 @@ export default function CriarSalaPage() {
         <h1 className="font-display text-xl font-bold text-text-primary">Nova Sala</h1>
       </header>
 
-      <main className="flex-1 overflow-y-auto flex flex-col gap-5 max-w-sm mx-auto w-full pt-4 pb-8"
-        style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
-      >
+      <main className="flex-1 overflow-y-auto max-w-sm mx-auto w-full">
+        <div className="flex flex-col gap-5 pt-4 pb-4">
         {/* Modo de Jogo: Online ou Solo */}
         <div>
           <p className="font-sans text-text-secondary text-sm text-center mb-3">
@@ -144,7 +143,7 @@ export default function CriarSalaPage() {
                   : "border-border-subtle bg-bg-surface hover:border-brand-wine/50"
               }`}
               aria-pressed={modo === "casal"}
-              style={modo === "casal" ? { boxShadow: "0 0 12px rgba(236, 72, 153, 0.2)" } : {}}
+              style={modo === "casal" ? { boxShadow: "0 0 12px color-mix(in srgb, var(--color-brand-secondary) 20%, transparent)" } : {}}
             >
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -212,14 +211,15 @@ export default function CriarSalaPage() {
             Quem pular recebe uma carta da mesma categoria + essa punição
           </p>
         </div>
-
-        {/* Botão com espaço para glow */}
-        <div className="pt-6 pb-8 px-2">
-          <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
-            Criar Sala
-          </Button>
         </div>
       </main>
+
+      {/* Botão fora do overflow para o glow não ser cortado */}
+      <div className="max-w-sm mx-auto w-full pt-4 pb-safe">
+        <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
+          Criar Sala
+        </Button>
+      </div>
     </div>
   );
 }
