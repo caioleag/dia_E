@@ -69,15 +69,17 @@ export default function AddFictionalPlayers({
           ))}
         </div>
 
-        <Button
-          onClick={handleAdd}
-          disabled={!nomeInput.trim() || jogadores.length >= maxPlayers}
-          size="sm"
-          className="w-full"
-        >
-          <Plus size={16} className="mr-1" />
-          Adicionar
-        </Button>
+        <div className="pt-2 pb-2 px-1">
+          <Button
+            onClick={handleAdd}
+            disabled={!nomeInput.trim() || jogadores.length >= maxPlayers}
+            size="sm"
+            className="w-full"
+          >
+            <Plus size={16} className="mr-1" />
+            Adicionar
+          </Button>
+        </div>
       </div>
 
       {/* Lista de Jogadores */}

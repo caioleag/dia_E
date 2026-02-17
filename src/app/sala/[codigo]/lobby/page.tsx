@@ -166,8 +166,8 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
   }
 
   return (
-    <div className="container-fixed bg-bg-deep px-6">
-      <header className="flex items-center gap-3 pt-safe py-4">
+    <div className="container-fixed bg-bg-deep">
+      <header className="flex items-center gap-3 pt-safe py-4 px-6">
         <button
           onClick={() => router.push("/")}
           className="p-2 -ml-2 rounded-full hover:bg-bg-elevated transition-colors"
@@ -185,47 +185,49 @@ export default function LobbyPage({ params }: { params: Promise<{ codigo: string
         </div>
       </header>
 
-      <main className="scrollable-content flex flex-col gap-6 py-4">
-        {isSoloMode ? (
-          /* Solo Mode - Add Fictional Players */
-          <AddFictionalPlayers
-            modo={sala.modo}
-            jogadores={jogadoresFicticios}
-            onJogadoresChange={setJogadoresFicticios}
-          />
-        ) : (
-          /* Online Mode - Show QR and Players */
-          <>
-            <div className="flex flex-col items-center gap-6">
-              <RoomCode codigo={codigo} />
-              <QRCodeDisplay codigo={codigo} />
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Users size={16} className="text-text-secondary" />
-                <span className="font-sans text-sm text-text-secondary">
-                  {players.length} jogador{players.length !== 1 ? "es" : ""}
-                  {sala?.modo === "casal" ? " / 2 necessários" : " / mínimo 3"}
-                </span>
+      <main className="scrollable-content px-6">
+        <div className="flex flex-col gap-6 py-4">
+          {isSoloMode ? (
+            /* Solo Mode - Add Fictional Players */
+            <AddFictionalPlayers
+              modo={sala.modo}
+              jogadores={jogadoresFicticios}
+              onJogadoresChange={setJogadoresFicticios}
+            />
+          ) : (
+            /* Online Mode - Show QR and Players */
+            <>
+              <div className="flex flex-col items-center gap-6">
+                <RoomCode codigo={codigo} />
+                <QRCodeDisplay codigo={codigo} />
               </div>
-              <PlayerList players={players} hostId={sala?.host_id} />
+
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Users size={16} className="text-text-secondary" />
+                  <span className="font-sans text-sm text-text-secondary">
+                    {players.length} jogador{players.length !== 1 ? "es" : ""}
+                    {sala?.modo === "casal" ? " / 2 necessários" : " / mínimo 3"}
+                  </span>
+                </div>
+                <PlayerList players={players} hostId={sala?.host_id} />
+              </div>
+            </>
+          )}
+
+          {sala && (
+            <div className="py-4 border-t border-border-subtle -mx-6 px-6">
+              <CategorySelector
+                modo={sala.modo}
+                selecionadas={categoriasAtivas}
+                onChange={setCategoriasAtivas}
+              />
             </div>
-          </>
-        )}
+          )}
+        </div>
       </main>
 
-      {sala && (
-        <div className="py-4 border-t border-border-subtle">
-          <CategorySelector
-            modo={sala.modo}
-            selecionadas={categoriasAtivas}
-            onChange={setCategoriasAtivas}
-          />
-        </div>
-      )}
-
-      <div className="pb-safe flex flex-col gap-3 py-4 px-4">
+      <div className="pb-safe flex flex-col gap-3 py-4 px-6 border-t border-border-subtle bg-bg-deep">
         <button
           onClick={handleCancelar}
           disabled={cancelling}

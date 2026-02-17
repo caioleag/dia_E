@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { type User, type Preferencia, type Item, type TipoItem, type Modo } from "@/types";
+import { getCartasFromCache } from "./offline-cache";
 
 export interface SorteioResult {
   item: Item;

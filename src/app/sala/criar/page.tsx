@@ -214,7 +214,7 @@ export default function CriarSalaPage() {
         </div>
 
         {/* Botão com espaço para glow */}
-        <div className="pt-2 pb-4">
+        <div className="pt-6 pb-8 px-2">
           <Button onClick={handleCriar} loading={loading} className="w-full" size="lg">
             Criar Sala
           </Button>
