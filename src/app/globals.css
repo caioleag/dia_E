@@ -41,7 +41,7 @@
 
   /* Gradient text utility */
   .gradient-text {
-    background: linear-gradient(135deg, #6b21a8, #ec4899);
+    background: linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -58,7 +58,7 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, #6b21a8, #ec4899);
+    background: linear-gradient(135deg, var(--color-brand-primary), var(--color-brand-secondary));
     -webkit-mask: linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -127,14 +127,14 @@
 }
 
 #nprogress .bar {
-  background: linear-gradient(90deg, #6b21a8, #ec4899, #f59e0b);
+  background: linear-gradient(90deg, var(--color-brand-primary), var(--color-brand-secondary), #f59e0b);
   position: fixed;
   z-index: 9999;
   top: 0;
   left: 0;
   width: 100%;
   height: 3px;
-  box-shadow: 0 0 10px rgba(236, 72, 153, 0.6), 0 0 5px rgba(236, 72, 153, 0.4);
+  box-shadow: 0 0 10px var(--color-brand-secondary), 0 0 5px var(--color-brand-secondary);
 }
 
 #nprogress .peg {
@@ -143,7 +143,7 @@
   right: 0px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px #ec4899, 0 0 5px #ec4899;
+  box-shadow: 0 0 10px var(--color-brand-secondary), 0 0 5px var(--color-brand-secondary);
   opacity: 1;
   transform: rotate(3deg) translate(0px, -4px);
 }

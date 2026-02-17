@@ -10,10 +10,10 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          purple: "#6B21A8",
-          pink: "#EC4899",
+          purple: "var(--color-brand-primary)",
+          pink: "var(--color-brand-secondary)",
           wine: "#9D174D",
-          lilac: "#A855F7",
+          lilac: "var(--color-brand-accent)",
           red: "#F43F5E",
           amber: "#F59E0B",
         },
