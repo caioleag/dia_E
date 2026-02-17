@@ -4,6 +4,7 @@ import Avatar from "@/components/ui/Avatar";
 import { TipoBadge } from "@/components/ui/Badge";
 import { type Item, type User } from "@/types";
 import { FavoriteButton } from "./FavoriteButton";
+import { CardLevelEffects } from "@/components/jogo/CardLevelEffects";
 
 interface GameCardProps {
   item: Item;
@@ -24,9 +25,12 @@ export default function GameCard({ item, segundoJogador, emoji, isPenalty, punic
       initial={{ rotateY: 90, opacity: 0 }}
       animate={{ rotateY: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="w-full max-w-md bg-bg-surface rounded-card-lg p-8 border gradient-border shadow-card-lg relative"
+      className="w-full max-w-md bg-bg-surface rounded-card-lg p-8 border gradient-border shadow-card-lg relative overflow-hidden"
       style={{ transformStyle: "preserve-3d" }}
     >
+      {/* Efeitos visuais por nível */}
+      {!isPenalty && <CardLevelEffects nivel={item.nivel} />}
+
       {/* Header badges */}
       <div className="flex items-center justify-between mb-6">
         {isPenalty ? (

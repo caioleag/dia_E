@@ -22,8 +22,9 @@ import {
   NIVEL_LABELS,
 } from "@/types";
 import { useSound } from "@/lib/hooks/useSound";
+import { PlayerRoulette } from "@/components/jogo/PlayerRoulette";
 
-const REACAO_EMOJIS = ["🔥", "😂", "😰", "🫣"];
+const REACAO_EMOJIS = ["🔥", "😂", "😰", "🫣", "❤️", "👏", "😱", "🤯", "💀", "🙈"];
 
 // ─── Timer ────────────────────────────────────────────────────────────────────
 function extrairTempo(conteudo: string): number {
@@ -113,22 +114,20 @@ function NonHostView({
           isPenalty={estado.isPenalty}
           currentUserId={currentUserId || undefined}
         />
-        {/* Reações */}
-        <div className="flex flex-col items-center gap-3">
-          <p className="font-sans text-xs text-text-disabled">Sua reação</p>
-          <div className="flex gap-4">
+        {/* Reações - Múltiplas permitidas */}
+        <div className="flex flex-col items-center gap-3 w-full">
+          <p className="font-sans text-xs text-text-disabled">Reaja quantas vezes quiser!</p>
+          <div className="grid grid-cols-5 gap-3 w-full max-w-xs">
             {REACAO_EMOJIS.map((emoji) => (
               <button
                 key={emoji}
                 onClick={() => onReagir(emoji)}
-                disabled={jaReagiu}
-                className={`text-3xl transition-all active:scale-125 ${jaReagiu ? "opacity-30 cursor-not-allowed" : "hover:scale-125 cursor-pointer"}`}
+                className="text-3xl transition-all active:scale-150 hover:scale-125 cursor-pointer p-2 rounded-lg hover:bg-bg-elevated"
               >
                 {emoji}
               </button>
             ))}
           </div>
-          {jaReagiu && <p className="font-sans text-xs text-text-disabled">Reação enviada!</p>}
         </div>
       </div>
     );
@@ -169,6 +168,10 @@ function JogoContent({ codigo }: { codigo: string }) {
   const [jaReagiu, setJaReagiu] = useState(false);
   const reactionChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
+  // Roulette state
+  const [showRoulette, setShowRoulette] = useState(false);
+  const [isRouletteSpinning, setIsRouletteSpinning] = useState(false);
+
   // Escalada level-up notification
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [levelUpLabel, setLevelUpLabel] = useState("");
@@ -188,8 +191,8 @@ function JogoContent({ codigo }: { codigo: string }) {
     };
   }, [codigo]);
 
-  // Reset jaReagiu when card changes
-  useEffect(() => { setJaReagiu(false); }, [estadoPartida?.cartaAtual?.id]);
+  // Reset jaReagiu when card changes - REMOVIDO para permitir múltiplas reações
+  // useEffect(() => { setJaReagiu(false); }, [estadoPartida?.cartaAtual?.id]);
 
   // Level-up notification
   useEffect(() => {
@@ -290,18 +293,49 @@ function JogoContent({ codigo }: { codigo: string }) {
   }
 
   function handleReagir(emoji: string) {
-    if (!reactionChannelRef.current || jaReagiu) return;
+    if (!reactionChannelRef.current) return;
+    // Permitir múltiplas reações (estilo Instagram Live)
     reactionChannelRef.current.send({ type: "broadcast", event: "reacao", payload: { emoji, nome: currentUserNome } });
-    setJaReagiu(true);
+    // Não marcar como "já reagiu" para permitir reagir novamente
   }
 
   async function handleSortearJogador() {
-    setSorteando(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    const jogador = sortearJogador();
-    play("success", 0.4);
-    if (jogador && "vibrate" in navigator) navigator.vibrate([30, 50, 30]);
-    setSorteando(false);
+    if (players.length <= 1) {
+      // Se só tem 1 jogador, sorteia direto
+      setSorteando(true);
+      await new Promise((r) => setTimeout(r, 1200));
+      sortearJogador();
+      play("success", 0.4);
+      if ("vibrate" in navigator) navigator.vibrate([30, 50, 30]);
+      setSorteando(false);
+      return;
+    }
+
+    // Mostrar roleta visual
+    setShowRoulette(true);
+    setIsRouletteSpinning(true);
+    play("click", 0.3);
+  }
+
+  function handleRouletteComplete(jogador: User) {
+    setIsRouletteSpinning(false);
+    play("success", 0.5);
+    if ("vibrate" in navigator) navigator.vibrate([30, 50, 30]);
+    
+    setTimeout(() => {
+      setShowRoulette(false);
+      sortearJogador(); // Sorteia o jogador de verdade
+    }, 500);
+  }
+
+  async function handleEscolhaAleatoria() {
+    const tipos: TipoItem[] = ["Verdade", "Desafio"];
+    const tipoAleatorio = tipos[Math.floor(Math.random() * tipos.length)];
+    play("click", 0.4);
+    
+    // Pequeno delay para feedback visual
+    await new Promise(r => setTimeout(r, 300));
+    handleEscolherTipo(tipoAleatorio);
   }
 
   async function handleEscolherTipo(tipo: TipoItem) {
@@ -497,22 +531,38 @@ function JogoContent({ codigo }: { codigo: string }) {
       <main className="flex-1 flex flex-col items-center justify-start px-6 pt-12 pb-8 overflow-visible">
         <AnimatePresence mode="wait">
           {/* Sorteio */}
+          {/* Sorteio ou Roleta */}
           {gameState === "sorteio" && (
             <motion.div key="sorteio" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               className="flex flex-col items-center gap-6 w-full max-w-sm">
-              <div className="text-center mb-4">
-                <h2 className="font-display text-2xl font-bold text-text-primary mb-2">
-                  {sala?.modo === "casal" && rodada > 1 ? "Próxima vez" : "Próximo jogador"}
-                </h2>
-                <p className="font-sans text-sm text-text-secondary">
-                  {sala?.modo === "casal" && rodada > 1 ? "Toque para continuar" : "Toque para sortear"}
-                </p>
-              </div>
-              <Button onClick={handleSortearJogador} loading={sorteando} size="lg" className="w-full">
-                {sorteando
-                  ? (sala?.modo === "casal" && rodada > 1 ? "Alternando..." : "Sorteando...")
-                  : (sala?.modo === "casal" && rodada > 1 ? "Próximo Jogador" : "Sortear Jogador")}
-              </Button>
+              {showRoulette ? (
+                <>
+                  <h2 className="font-display text-2xl font-bold text-text-primary mb-2">
+                    Sorteando...
+                  </h2>
+                  <PlayerRoulette
+                    players={players}
+                    isSpinning={isRouletteSpinning}
+                    onComplete={handleRouletteComplete}
+                  />
+                </>
+              ) : (
+                <>
+                  <div className="text-center mb-4">
+                    <h2 className="font-display text-2xl font-bold text-text-primary mb-2">
+                      {sala?.modo === "casal" && rodada > 1 ? "Próxima vez" : "Próximo jogador"}
+                    </h2>
+                    <p className="font-sans text-sm text-text-secondary">
+                      {sala?.modo === "casal" && rodada > 1 ? "Toque para continuar" : "Toque para sortear"}
+                    </p>
+                  </div>
+                  <Button onClick={handleSortearJogador} loading={sorteando} size="lg" className="w-full">
+                    {sorteando
+                      ? (sala?.modo === "casal" && rodada > 1 ? "Alternando..." : "Sorteando...")
+                      : (sala?.modo === "casal" && rodada > 1 ? "Próximo Jogador" : "Sortear Jogador")}
+                  </Button>
+                </>
+              )}
             </motion.div>
           )}
 
@@ -534,6 +584,14 @@ function JogoContent({ codigo }: { codigo: string }) {
                 <Button onClick={() => handleEscolherTipo("Desafio")} disabled={buscandoCarta} size="lg" className="w-full bg-brand-red">
                   Desafio
                 </Button>
+                {/* Botão de escolha aleatória */}
+                <button
+                  onClick={handleEscolhaAleatoria}
+                  disabled={buscandoCarta}
+                  className="w-full py-2 rounded-xl border border-border-subtle bg-bg-surface text-text-secondary font-sans text-sm hover:border-brand-lilac hover:text-brand-lilac transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  🎲 Aleatório
+                </button>
               </div>
               {buscandoCarta && <p className="font-sans text-xs text-text-disabled animate-pulse">Buscando carta...</p>}
             </motion.div>
